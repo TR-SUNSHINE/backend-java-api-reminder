@@ -1,0 +1,30 @@
+*.class
+target
+/bin/
+/.settings/
+.project
+.classpath
+
+# Package Files
+*.jar
+*.war
+*.ear
+
+# Serverless directories
+.serverless
+
+config.dev.json
+
+#hello.iml file
+*.iml
+
+#files in .idea folder - selected from https://rider-support.jetbrains.com/hc/en-us/articles/207097529-What-is-the-idea-folder-#:~:text=Daria%20Dovzhikova-,The%20.,history%20and%20currently%20selected%20configuration.
+# User-specific stuff
+.idea/**/workspace.xml
+.idea/**/libraries
+.idea/**/misc.xml
+.idea/**/jarRepositories.xml
+.idea/**/encodings.xml
+.idea/**/compiler.xml
+.idea/**/.name
+
