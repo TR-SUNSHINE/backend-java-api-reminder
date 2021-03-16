@@ -1,11 +1,11 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>com.serverless</groupId>
-  <artifactId>hello</artifactId>
+  <groupId>com.techreturners</groupId>
+  <artifactId>reminders-java-api</artifactId>
   <packaging>jar</packaging>
   <version>dev</version>
-  <name>hello</name>
+  <name>reminders-java-api</name>
 
   <properties>
     <maven.compiler.source>1.8</maven.compiler.source>
@@ -18,6 +18,16 @@
       <groupId>com.amazonaws</groupId>
       <artifactId>aws-lambda-java-log4j2</artifactId>
       <version>1.1.0</version>
+    </dependency>
+    <dependency>
+      <groupId>com.amazonaws</groupId>
+      <artifactId>aws-lambda-java-events</artifactId>
+      <version>3.7.0</version>
+    </dependency>
+    <dependency>
+      <groupId>mysql</groupId>
+      <artifactId>mysql-connector-java</artifactId>
+      <version>5.1.49</version>
     </dependency>
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
