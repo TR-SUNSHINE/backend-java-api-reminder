@@ -22,7 +22,7 @@ package:
 
 functions:
   get-reminder-java-api:
-    handler: com.techreturners.GetReminderHandler
+    handler: com.sunshine.GetReminderHandler
     events:
       - httpApi:
           path: /users/{userId}/reminders/{reminderId}
