@@ -62,9 +62,25 @@ public class SaveReminderHandler implements RequestHandler<APIGatewayProxyReques
                     "?");
             preparedStatement.setString(1, UUID.randomUUID().toString());
             preparedStatement.setString(2, UserId);
-//            preparedStatement.setTimestamp(3, Timestamp.valueOf(reminder.getReminderTime()));
             preparedStatement.setTimestamp(3, Timestamp.valueOf(reminder.getReminderTime()));
             preparedStatement.execute();
+
+            // would this work to get reminderId back?  try when mapper working
+            // resultSet = preparedStatement.executeQuery();
+//            String id = null;
+//
+//            while (resultSet.next()){
+//
+//               id = resultSet.getString("id")
+//            }
+//            try {
+//
+//                String responseBody = objectMapper.writeValueAsString(id);
+//                response.setBody(responseBody);
+//
+//            } catch (JsonProcessingException exception){
+//                LOG.error("unable to marshal tasks array", exception);
+//            }
 
             connection.close();
 
