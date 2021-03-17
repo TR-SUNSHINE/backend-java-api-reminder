@@ -10,12 +10,17 @@ public class Reminder {
 
     public Reminder() {}
 
+    public Reminder(LocalDateTime reminderTime){
+        this.reminderTime = reminderTime;
+    }
+
     public Reminder(String reminderId, String userId, LocalDateTime reminderTime){
         this.reminderId = reminderId;
         this.userId = userId;
         this.reminderTime = reminderTime;
     }
 
+    // for future iterations of frontend code when add walkId to a reminder
     public Reminder(String reminderId, String userId, String walkId, LocalDateTime reminderTime){
         this.reminderId = reminderId;
         this.userId = userId;
