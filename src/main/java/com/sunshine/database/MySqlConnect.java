@@ -8,7 +8,7 @@ import java.sql.*;
 
 public class MySqlConnect {
 
-    private static final Logger LOG = LogManager.getLogger(GetReminderHandler.class);
+    private static final Logger LOG = LogManager.getLogger(MySqlConnect.class);
 
     private Connection connection = null;
 
