@@ -59,9 +59,9 @@ public class GetReminderHandler implements RequestHandler<APIGatewayProxyRequest
 
             while (resultSet.next()){
 
-                reminder = new Reminder(   resultSet.getString("id"),
-                                                    resultSet.getString("userID"),
-                                                    resultSet.getTimestamp("reminderTime").toLocalDateTime());
+                reminder = new Reminder(    resultSet.getString("id"),
+                                            resultSet.getString("userID"),
+                                            resultSet.getTimestamp("reminderTime").toLocalDateTime());
 
                 reminders.add(reminder);
             }
