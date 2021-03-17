@@ -1,7 +1,7 @@
 package com.sunshine;
 
 import java.sql.*;
-
+import com.sunshine.database.MySqlConnect;
 
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
@@ -23,7 +23,9 @@ public class GetReminderHandler implements RequestHandler<APIGatewayProxyRequest
 
     private static final Logger LOG = LogManager.getLogger(GetReminderHandler.class);
 
-    private Connection connection = null;
+
+    MySqlConnect mySqlConnect = new MySqlConnect();
+
     private PreparedStatement preparedStatement = null;
     private ResultSet resultSet = null;
 
@@ -40,22 +42,11 @@ public class GetReminderHandler implements RequestHandler<APIGatewayProxyRequest
         Reminder reminder;
 
         try {
-            Class.forName("com.mysql.jdbc.Driver");
 
-            LOG.debug(String.format("Connecting to DB on %s", System.getenv("DB_HOST")));
-
-            connection = DriverManager.getConnection(String.format("jdbc:mysql://%s/%s?user=%s" +
-                    "&password=%s",
-                    System.getenv("DB_HOST"),
-                    System.getenv("DB_NAME"),
-                    System.getenv("DB_USER"),
-                    System.getenv("DB_PASSWORD")));
-
-            preparedStatement = connection.prepareStatement("SELECT * FROM reminder WHERE id = ?");
+            preparedStatement = mySqlConnect.connect().prepareStatement("SELECT * FROM reminder WHERE id =" +
+                    " ?");
             preparedStatement.setString(1, ReminderId);
             resultSet = preparedStatement.executeQuery();
-
-
 
             while (resultSet.next()){
 
@@ -67,12 +58,10 @@ public class GetReminderHandler implements RequestHandler<APIGatewayProxyRequest
             }
 
         } catch (Exception exception){
-            LOG.error(String.format("Unable to query database for reminder %s for user %s",
-                    ReminderId,
-                    UserId),
+            LOG.error(String.format("Exception message %s", exception.getMessage()),
              exception);
         } finally {
-            closeConnection();
+            mySqlConnect.closeConnection();
         }
 
         APIGatewayProxyResponseEvent response = new APIGatewayProxyResponseEvent();
@@ -93,23 +82,23 @@ public class GetReminderHandler implements RequestHandler<APIGatewayProxyRequest
 
     }
 
-    public void closeConnection(){
-
-        try {
-            if (resultSet != null){
-                resultSet.close();
-            }
-
-            if (preparedStatement != null) {
-                preparedStatement.close();
-            }
-
-            if (connection != null) {
-                connection.close();
-            }
-        } catch (SQLException exception){
-            LOG.error("Unable to close connection to MySQL - {}", exception.getMessage());
-        }
-    }
+//    public void closeConnection(){
+//
+//        try {
+//            if (resultSet != null){
+//                resultSet.close();
+//            }
+//
+//            if (preparedStatement != null) {
+//                preparedStatement.close();
+//            }
+//
+//            if (connection != null) {
+//                connection.close();
+//            }
+//        } catch (SQLException exception){
+//            LOG.error("Unable to close connection to MySQL - {}", exception.getMessage());
+//        }
+//    }
 
 }
