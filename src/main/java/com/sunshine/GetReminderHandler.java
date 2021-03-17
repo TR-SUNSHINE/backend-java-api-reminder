@@ -23,7 +23,6 @@ public class GetReminderHandler implements RequestHandler<APIGatewayProxyRequest
 
     private static final Logger LOG = LogManager.getLogger(GetReminderHandler.class);
 
-
     MySqlConnect mySqlConnect = new MySqlConnect();
 
     private PreparedStatement preparedStatement = null;
@@ -38,6 +37,8 @@ public class GetReminderHandler implements RequestHandler<APIGatewayProxyRequest
         String UserId = request.getPathParameters().get("userId");
         String ReminderId = request.getPathParameters().get("reminderId");
 
+        APIGatewayProxyResponseEvent response = new APIGatewayProxyResponseEvent();
+        response.setStatusCode(200);
         List<Reminder> reminders = new ArrayList<>();
         Reminder reminder;
 
@@ -57,15 +58,17 @@ public class GetReminderHandler implements RequestHandler<APIGatewayProxyRequest
                 reminders.add(reminder);
             }
 
-        } catch (Exception exception){
-            LOG.error(String.format("Exception message %s", exception.getMessage()),
+            mySqlConnect.closeConnection();
+
+        } catch (SQLException exception){
+            LOG.error(String.format("SQL exception: %s", exception.getMessage()),
              exception);
+            response.setStatusCode(500);
+
         } finally {
             mySqlConnect.closeConnection();
         }
 
-        APIGatewayProxyResponseEvent response = new APIGatewayProxyResponseEvent();
-        response.setStatusCode(200);
 
         ObjectMapper objectMapper = new ObjectMapper();
 
@@ -81,24 +84,5 @@ public class GetReminderHandler implements RequestHandler<APIGatewayProxyRequest
         return response;
 
     }
-
-//    public void closeConnection(){
-//
-//        try {
-//            if (resultSet != null){
-//                resultSet.close();
-//            }
-//
-//            if (preparedStatement != null) {
-//                preparedStatement.close();
-//            }
-//
-//            if (connection != null) {
-//                connection.close();
-//            }
-//        } catch (SQLException exception){
-//            LOG.error("Unable to close connection to MySQL - {}", exception.getMessage());
-//        }
-//    }
 
 }
