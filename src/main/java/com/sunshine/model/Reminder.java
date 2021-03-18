@@ -28,11 +28,18 @@ public class Reminder {
         this.reminderTime = reminderTime;
     }
 
-    public String getReminderId(){ return reminderId;}
+    public String getReminderId(){ return this.reminderId;}
 
-    public String getUserId(){ return userId;}
+    public void setReminderId(String reminderId){this.reminderId = reminderId;}
 
-    public String getWalkId(){ return walkId;}
+    public String getUserId(){ return this.userId;}
 
-    public LocalDateTime getReminderTime(){ return reminderTime;}
+    public void setUserId(String userId){this.userId = userId;}
+
+    public String getWalkId(){ return this.walkId;}
+
+    public LocalDateTime getReminderTime(){ return this.reminderTime;}
+
+    public void setReminderTime(LocalDateTime reminderTime){ this.reminderTime =
+         reminderTime; }
 }
