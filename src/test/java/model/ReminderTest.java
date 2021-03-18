@@ -9,9 +9,8 @@ import java.time.Month;
 
 public class ReminderTest {
 
-
     @Test
-    @DisplayName("Reminder Test: constructor with reminderTime")
+    @DisplayName("Test reminder time: constructor with reminderTime")
     public void testReminderTime(){
         LocalDateTime christmas = LocalDateTime.of(2021, Month.DECEMBER, 25,7, 30);
         Reminder reminder = new Reminder(christmas);
@@ -23,7 +22,25 @@ public class ReminderTest {
         assertEquals(30, reminder.getReminderTime().getMinute(), "Minute was incorrect");
     }
 
+    @Test
+    @DisplayName("Test reminderId: constructor with userId, reminderId, reminderTime")
+    public void testReminderId(){
+        LocalDateTime christmas = LocalDateTime.of(2021, Month.DECEMBER, 25,7, 30);
+        String reminderId = "0f6d04c5-2014-4a9b-9ec3-287c05a47ca5";
+        String userId = "b06418f8-be80-4da5-911e-fe1b1413d413";
+        Reminder reminder = new Reminder(reminderId, userId, christmas);
+        assertEquals("0f6d04c5-2014-4a9b-9ec3-287c05a47ca5", reminder.getReminderId(),
+                "reminderId was incorrect");
+    }
 
-
-
+    @Test
+    @DisplayName("Test userId: constructor with userId, reminderId, reminderTime")
+    public void testUserId(){
+        LocalDateTime christmas = LocalDateTime.of(2021, Month.DECEMBER, 25,7, 30);
+        String reminderId = "0f6d04c5-2014-4a9b-9ec3-287c05a47ca5";
+        String userId = "b06418f8-be80-4da5-911e-fe1b1413d413";
+        Reminder reminder = new Reminder(reminderId, userId, christmas);
+        assertEquals("b06418f8-be80-4da5-911e-fe1b1413d413", reminder.getUserId(),
+                "userId was incorrect");
+    }
 }
