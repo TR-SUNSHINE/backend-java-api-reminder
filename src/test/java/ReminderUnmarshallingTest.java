@@ -9,9 +9,21 @@ import java.io.IOException;
 public class ReminderUnmarshallingTest {
 
     @Test
-    void testUnmarshallReminder() throws IOException {
+    void testUnmarshallReminderWithZ() throws IOException {
         String requestBody = "{" +
                 "\"reminderTime\": \"2020-09-30T07:27:39Z\"" +
+                "}";
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+        Reminder reminder = objectMapper.readValue(requestBody, Reminder.class);
+        Assertions.assertNotNull(reminder.getReminderTime());
+        System.out.println(reminder.getReminderTime().toString());
+    }
+
+    @Test
+    void testUnmarshallReminderWithOutZ() throws IOException {
+        String requestBody = "{" +
+                "\"reminderTime\": \"2020-09-30T07:27:39\"" +
                 "}";
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
