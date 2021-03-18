@@ -1,13 +1,13 @@
 package com.sunshine;
 
 import java.sql.*;
+import com.sunshine.database.MySqlConnect;
 
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.apache.logging.log4j.LogManager;
@@ -23,7 +23,8 @@ public class SaveReminderHandler implements RequestHandler<APIGatewayProxyReques
 
     private static final Logger LOG = LogManager.getLogger(SaveReminderHandler.class);
 
-    private Connection connection = null;
+    MySqlConnect mySqlConnect = new MySqlConnect();
+
     private PreparedStatement preparedStatement = null;
     private ResultSet resultSet = null;
 
@@ -49,83 +50,30 @@ public class SaveReminderHandler implements RequestHandler<APIGatewayProxyReques
 
             Reminder reminder = objectMapper.readValue(requestBody, Reminder.class);
 
-            Class.forName("com.mysql.jdbc.Driver");
-
-            LOG.debug(String.format("Connecting to DB on %s", System.getenv("DB_HOST")));
-
-            connection = DriverManager.getConnection(String.format("jdbc:mysql://%s/%s?user=%s" +
-                            "&password=%s",
-                    System.getenv("DB_HOST"),
-                    System.getenv("DB_NAME"),
-                    System.getenv("DB_USER"),
-                    System.getenv("DB_PASSWORD")));
-
-//            preparedStatement = connection.prepareStatement("INSERT INTO reminder (id, userID," +
-//                    "reminderTime) VALUES = ?, ?, " +
-//                    "?");
-            preparedStatement = connection.prepareStatement("INSERT INTO reminder (id, userID," +
+            preparedStatement = mySqlConnect.connect().prepareStatement("INSERT INTO reminder (id, " +
+                    "userID," +
                     "reminderTime) VALUES(?, ?, ?)");
             preparedStatement.setString(1, UUID.randomUUID().toString());
             preparedStatement.setString(2, UserId);
             preparedStatement.setTimestamp(3, Timestamp.valueOf(reminder.getReminderTime()));
             preparedStatement.execute();
 
-            // would this work to get reminderId back?  try when mapper working
-            // resultSet = preparedStatement.executeQuery();
-//            String id = null;
-//
-//            while (resultSet.next()){
-//
-//               id = resultSet.getString("id")
-//            }
-//            try {
-//
-//                String responseBody = objectMapper.writeValueAsString(id);
-//                response.setBody(responseBody);
-//
-//            } catch (JsonProcessingException exception){
-//                LOG.error("unable to marshal tasks array", exception);
-//            }
-
-            connection.close();
+            mySqlConnect.closeConnection();
 
         } catch (IOException exception){
             LOG.error(String.format("Unable to unmarshall JSON for adding a reminder %s",
                     exception.getMessage()));
+            response.setStatusCode(500);
 
-            // what status code for unmarshalling??
-
-        } catch (ClassNotFoundException exception){
-            LOG.error("ClassNotFoundException", exception);
         } catch (SQLException exception){
-            LOG.error("SQL exception", exception);
+            LOG.error(String.format("SQL exception: %s",exception.getMessage()), exception);
             response.setStatusCode(500);
         }
         finally {
-            closeConnection();
+            mySqlConnect.closeConnection();
         }
 
         return response;
 
     }
-
-    public void closeConnection(){
-
-        try {
-            if (resultSet != null){
-                resultSet.close();
-            }
-
-            if (preparedStatement != null) {
-                preparedStatement.close();
-            }
-
-            if (connection != null) {
-                connection.close();
-            }
-        } catch (SQLException exception){
-            LOG.error("Unable to close connection to MySQL - {}", exception.getMessage());
-        }
-    }
-
 }
