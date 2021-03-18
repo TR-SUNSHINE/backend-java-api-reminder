@@ -23,6 +23,14 @@ public class ReminderTest {
     }
 
     @Test
+    @DisplayName("Test userId: constructor with reminderTime omly")
+    public void testUserIdIsNull(){
+        LocalDateTime christmas = LocalDateTime.of(2021, Month.DECEMBER, 25,7, 30);
+        Reminder reminder = new Reminder(christmas);
+        assertNull(reminder.getUserId(), "userId is not Null");
+    }
+
+    @Test
     @DisplayName("Test reminderId: constructor with userId, reminderId, reminderTime")
     public void testReminderId(){
         LocalDateTime christmas = LocalDateTime.of(2021, Month.DECEMBER, 25,7, 30);
