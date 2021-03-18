@@ -9,6 +9,7 @@ import com.amazonaws.services.lambda.runtime.RequestHandler;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -36,6 +37,8 @@ public class SaveReminderHandler implements RequestHandler<APIGatewayProxyReques
         String requestBody = request.getBody();
 
         ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+
         APIGatewayProxyResponseEvent response = new APIGatewayProxyResponseEvent();
         response.setStatusCode(201);
         Map<String, String> headers = new HashMap<>();
@@ -57,9 +60,11 @@ public class SaveReminderHandler implements RequestHandler<APIGatewayProxyReques
                     System.getenv("DB_USER"),
                     System.getenv("DB_PASSWORD")));
 
+//            preparedStatement = connection.prepareStatement("INSERT INTO reminder (id, userID," +
+//                    "reminderTime) VALUES = ?, ?, " +
+//                    "?");
             preparedStatement = connection.prepareStatement("INSERT INTO reminder (id, userID," +
-                    "reminderTime) VALUES = ?, ?, " +
-                    "?");
+                    "reminderTime) VALUES(?, ?, ?)");
             preparedStatement.setString(1, UUID.randomUUID().toString());
             preparedStatement.setString(2, UserId);
             preparedStatement.setTimestamp(3, Timestamp.valueOf(reminder.getReminderTime()));
@@ -94,6 +99,7 @@ public class SaveReminderHandler implements RequestHandler<APIGatewayProxyReques
             LOG.error("ClassNotFoundException", exception);
         } catch (SQLException exception){
             LOG.error("SQL exception", exception);
+            response.setStatusCode(500);
         }
         finally {
             closeConnection();
