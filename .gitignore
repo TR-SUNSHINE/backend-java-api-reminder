@@ -27,4 +27,5 @@ config.dev.json
 .idea/**/encodings.xml
 .idea/**/compiler.xml
 .idea/**/.name
+.idea/**/uiDesigner.xml
 
