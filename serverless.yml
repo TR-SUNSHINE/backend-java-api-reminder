@@ -39,5 +39,11 @@ functions:
       - httpApi:
           path: /users/{userId}/reminders/{reminderId}
           method: delete
+  update-reminder-java-api:
+    handler: com.sunshine.handler.UpdateReminderHandler
+    events:
+      - httpApi:
+          path: /users/{userId}/reminders/{reminderId}
+          method: put
 
 

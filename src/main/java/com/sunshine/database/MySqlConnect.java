@@ -65,9 +65,9 @@ public class MySqlConnect {
 
     public void createReminder(Reminder reminder){
 
-        try{
+        LOG.debug("in createReminder");
 
-            LOG.debug("in createReminder");
+        try{
 
             preparedStatement = this.openConnection().prepareStatement("INSERT INTO reminder (id, " +
                     "userID," +
@@ -105,6 +105,31 @@ public class MySqlConnect {
             }
 
         return resultSet;
+
+    }
+
+    public int updateReminder (Reminder reminder){
+
+        LOG.debug("in updateReminder");
+        int updated = 0;
+
+        try{
+
+            preparedStatement = this.openConnection().prepareStatement("UPDATE reminder SET " +
+                    "reminderTime = ? WHERE id = " +
+                    "? AND userID = ?");
+            preparedStatement.setTimestamp(1, Timestamp.valueOf(reminder.getReminderTime()));
+            preparedStatement.setString(2, reminder.getReminderId());
+            preparedStatement.setString(3, reminder.getUserId());
+            LOG.debug("Updating database - connection closed: {}",connection.isClosed() );
+            updated = preparedStatement.executeUpdate();
+
+        } catch (SQLException exception){
+
+            LOG.error(String.format("SQL exception: %s", exception.getMessage()), exception);
+        }
+
+        return updated;
 
     }
 
