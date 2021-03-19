@@ -11,9 +11,12 @@ public class MySqlConnect {
 
     private Connection connection = null;
     private PreparedStatement preparedStatement = null;
+    private ResultSet resultSet = null;
 
     public Connection openConnection() {
         if (connection == null) {
+
+            LOG.debug("opening connection");
 
             try {
                 Class.forName("com.mysql.jdbc.Driver");
@@ -41,6 +44,8 @@ public class MySqlConnect {
     }
 
     public void closeConnection() {
+
+        LOG.debug("closing connection");
 
         try {
 
@@ -79,6 +84,33 @@ public class MySqlConnect {
             LOG.error(String.format("SQL exception: %s", exception.getMessage()), exception);
             // response.setStatusCode(500);
         }
+
+    }
+
+    public ResultSet getReminder(String UserId, String ReminderId){
+
+        if (connection != null) {
+
+            LOG.debug("in getReminder");
+
+            try {
+
+                LOG.debug("Getting reminder; connection closed: {}",connection.isClosed() );
+
+                preparedStatement = openConnection().prepareStatement("SELECT * FROM reminder " +
+                        "WHERE id = ? AND userID = ?");
+                preparedStatement.setString(1, ReminderId);
+                preparedStatement.setString(2, UserId);
+                resultSet = preparedStatement.executeQuery();
+
+            } catch (SQLException exception) {
+
+                LOG.error(String.format("SQL exception: %s", exception.getMessage()), exception);
+                // response.setStatusCode(500);
+            }
+
+        }
+        return resultSet;
 
     }
 

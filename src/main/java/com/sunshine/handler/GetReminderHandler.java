@@ -1,4 +1,4 @@
-package com.sunshine;
+package com.sunshine.handler;
 
 import java.sql.*;
 import com.sunshine.database.MySqlConnect;
@@ -26,7 +26,7 @@ public class GetReminderHandler implements RequestHandler<APIGatewayProxyRequest
     MySqlConnect mySqlConnect = new MySqlConnect();
 
     private PreparedStatement preparedStatement = null;
-    private ResultSet resultSet = null;
+     private ResultSet resultSet = null;
 
     @Override
     public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent request,
@@ -43,29 +43,39 @@ public class GetReminderHandler implements RequestHandler<APIGatewayProxyRequest
         Reminder reminder;
 
         try {
-            // create database object  - already started
+            // create database object  - done
             // open connection on database - done
             // get data pass in path parameter
             // call database object to get data with parameter as reminder object
             // close connection to database object - done
             // getReminder - build collection - array list
 
-            preparedStatement = mySqlConnect.connect().prepareStatement("SELECT * FROM reminder WHERE id =" +
-                    " ?");
+//            Connection connection = mySqlConnect.openConnection();
+
+//            if (connection != null) {
+
+                LOG.debug("calling get reminder with live connection");
+
+//                ResultSet resultSet = mySqlConnect.getReminder(UserId, ReminderId);
+
+
+            preparedStatement = mySqlConnect.openConnection().prepareStatement("SELECT * FROM reminder " +
+                    "WHERE id = ? AND userID = ?");
             preparedStatement.setString(1, ReminderId);
+            preparedStatement.setString(2, UserId);
             resultSet = preparedStatement.executeQuery();
 
-            while (resultSet.next()){
+                while (resultSet.next()) {
 
-                reminder = new Reminder(    resultSet.getString("id"),
-                                            resultSet.getString("userID"),
-                                            resultSet.getTimestamp("reminderTime").toLocalDateTime());
+                    reminder = new Reminder(resultSet.getString("id"),
+                            resultSet.getString("userID"),
+                            resultSet.getTimestamp("reminderTime").toLocalDateTime());
 
-                reminders.add(reminder);
-            }
+                    reminders.add(reminder);
+                }
 
-            mySqlConnect.closeConnection();
-
+//                mySqlConnect.closeConnection();
+//            }
         } catch (SQLException exception){
             LOG.error(String.format("SQL exception: %s", exception.getMessage()),
              exception);
