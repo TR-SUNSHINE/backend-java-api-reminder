@@ -53,10 +53,14 @@ public class GetReminderHandler implements RequestHandler<APIGatewayProxyRequest
 
             LOG.debug("attempting connection to database");
 
-            preparedStatement = mySqlConnect.openConnection().prepareStatement("SELECT * FROM reminder " +
-                    "WHERE id = ? AND userID = ?");
-            preparedStatement.setString(1, ReminderId);
-            preparedStatement.setString(2, UserId);
+            preparedStatement = mySqlConnect.prepareSQL(UserId, ReminderId);
+
+//                    .prepareStatement(
+//                    "SELECT * FROM" +
+//                    " reminder " +
+//                    "WHERE id = ? AND userID = ?");
+//            preparedStatement.setString(1, ReminderId);
+//            preparedStatement.setString(2, UserId);
             resultSet = preparedStatement.executeQuery();
 
                 while (resultSet.next()) {
