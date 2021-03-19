@@ -25,6 +25,7 @@ public class GetReminderHandler implements RequestHandler<APIGatewayProxyRequest
 
     MySqlConnect mySqlConnect = new MySqlConnect();
 
+    private Connection connection = null;
     private PreparedStatement preparedStatement = null;
      private ResultSet resultSet = null;
 
@@ -58,8 +59,15 @@ public class GetReminderHandler implements RequestHandler<APIGatewayProxyRequest
 
 //                ResultSet resultSet = mySqlConnect.getReminder(UserId, ReminderId);
 
+            Class.forName("com.mysql.jdbc.Driver");
 
-            preparedStatement = mySqlConnect.openConnection().prepareStatement("SELECT * FROM reminder " +
+            connection = DriverManager.getConnection(String.format("jdbc:mysql://%s/%s?user=%s&password=%s",
+                    System.getenv("DB_HOST"),
+                    System.getenv("DB_NAME"),
+                    System.getenv("DB_USER"),
+                    System.getenv("DB_PASSWORD")));
+
+            preparedStatement = connection.prepareStatement("SELECT * FROM reminder " +
                     "WHERE id = ? AND userID = ?");
             preparedStatement.setString(1, ReminderId);
             preparedStatement.setString(2, UserId);
@@ -74,15 +82,19 @@ public class GetReminderHandler implements RequestHandler<APIGatewayProxyRequest
                     reminders.add(reminder);
                 }
 
-//                mySqlConnect.closeConnection();
-//            }
         } catch (SQLException exception){
             LOG.error(String.format("SQL exception: %s", exception.getMessage()),
              exception);
             response.setStatusCode(500);
 
-        } finally {
-            mySqlConnect.closeConnection();
+        } catch (ClassNotFoundException exception){
+            LOG.error(String.format("Class not found exception: %s", exception.getMessage()),
+                    exception);
+            response.setStatusCode(500);
+        }
+
+        finally {
+            closeConnection();
         }
 
 
@@ -99,6 +111,26 @@ public class GetReminderHandler implements RequestHandler<APIGatewayProxyRequest
 
         return response;
 
+    }
+
+
+    private void closeConnection() {
+        try {
+            if (resultSet != null) {
+                resultSet.close();
+            }
+
+            if (preparedStatement != null) {
+                preparedStatement.close();
+            }
+
+            if (connection != null) {
+                connection.close();
+            }
+        }
+        catch (Exception e) {
+            LOG.error("Unable to close connections to MySQL - {}", e.getMessage());
+        }
     }
 
 }
