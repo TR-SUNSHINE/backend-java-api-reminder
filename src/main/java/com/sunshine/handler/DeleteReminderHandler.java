@@ -38,18 +38,9 @@ public class DeleteReminderHandler implements RequestHandler<APIGatewayProxyRequ
         response.setHeaders(headers);
 
         try {
-
-            preparedStatement = mySqlConnect.connect().prepareStatement("DELETE FROM reminder " +
-                    "WHERE id " +
-                    "= " +
-                    "?");
-            preparedStatement.setString(1, ReminderId);
-            preparedStatement.execute();
-
-            mySqlConnect.closeConnection();
-
-        } catch (SQLException exception){
-            LOG.error(String.format("SQL Exception: %s", exception.getMessage()), exception);
+            mySqlConnect.deleteReminder(UserId, ReminderId);
+        } catch (Exception exception){
+            LOG.error(String.format("Exception: %s", exception.getMessage()), exception);
             response.setStatusCode(500);
         } finally {
             mySqlConnect.closeConnection();

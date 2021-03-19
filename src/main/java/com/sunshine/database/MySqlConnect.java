@@ -75,6 +75,7 @@ public class MySqlConnect {
             preparedStatement.setString(1, reminder.getReminderId());
             preparedStatement.setString(2, reminder.getUserId());
             preparedStatement.setTimestamp(3, Timestamp.valueOf(reminder.getReminderTime()));
+            LOG.debug("Creating in database - connection closed: {}",connection.isClosed() );
             preparedStatement.execute();
 
         } catch (SQLException exception){
@@ -104,6 +105,26 @@ public class MySqlConnect {
             }
 
         return resultSet;
+
+    }
+
+    public void deleteReminder (String UserId, String ReminderId){
+
+        LOG.debug("in deleteReminder");
+
+        try {
+
+            preparedStatement = this.openConnection().prepareStatement("DELETE FROM reminder " +
+                    "WHERE id = ? AND userID = ?");
+            preparedStatement.setString(1, ReminderId);
+            preparedStatement.setString(2, UserId);
+            LOG.debug("Deleting from database - connection closed: {}",connection.isClosed() );
+            preparedStatement.execute();
+
+        } catch (SQLException exception){
+
+            LOG.error(String.format("SQL exception: %s", exception.getMessage()), exception);
+        }
 
     }
 
