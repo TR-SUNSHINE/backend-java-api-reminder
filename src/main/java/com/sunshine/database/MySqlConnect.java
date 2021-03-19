@@ -47,10 +47,10 @@ public class MySqlConnect {
 
         try {
 
-//            if (resultSet != null){
-//                resultSet.close();
-//            }
-//
+            if (resultSet != null){
+                resultSet.close();
+            }
+
             if (preparedStatement != null) {
                 preparedStatement.close();
             }
