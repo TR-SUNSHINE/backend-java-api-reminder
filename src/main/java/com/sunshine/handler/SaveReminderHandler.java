@@ -25,8 +25,6 @@ public class SaveReminderHandler implements RequestHandler<APIGatewayProxyReques
 
     MySqlConnect mySqlConnect = new MySqlConnect();
 
-    private ResultSet resultSet = null;
-
     @Override
     public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent request,
                                                       Context context){
@@ -51,11 +49,7 @@ public class SaveReminderHandler implements RequestHandler<APIGatewayProxyReques
             reminder.setUserId(UserId);
             reminder.setReminderId(UUID.randomUUID().toString());
 
-            mySqlConnect.openConnection();
-
-            mySqlConnect.insertReminder(reminder);
-
-            mySqlConnect.closeConnection();
+            mySqlConnect.createReminder(reminder);
 
             // send reminderId to frontend
 
@@ -63,7 +57,6 @@ public class SaveReminderHandler implements RequestHandler<APIGatewayProxyReques
             LOG.error(String.format("Unable to unmarshall JSON for adding a reminder %s",
                     exception.getMessage()));
             response.setStatusCode(500);
-
         }
 
         finally {

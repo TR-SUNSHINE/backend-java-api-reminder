@@ -63,13 +63,13 @@ public class MySqlConnect {
         }
     }
 
-    public void insertReminder(Reminder reminder){
+    public void createReminder(Reminder reminder){
 
         try{
 
-            LOG.debug("Inserting reminder");
+            LOG.debug("in createReminder");
 
-            preparedStatement = connection.prepareStatement("INSERT INTO reminder (id, " +
+            preparedStatement = this.openConnection().prepareStatement("INSERT INTO reminder (id, " +
                     "userID," +
                     "reminderTime) VALUES(?, ?, ?)");
             preparedStatement.setString(1, reminder.getReminderId());
@@ -80,7 +80,6 @@ public class MySqlConnect {
         } catch (SQLException exception){
 
             LOG.error(String.format("SQL exception: %s", exception.getMessage()), exception);
-            // response.setStatusCode(500);
         }
 
     }
