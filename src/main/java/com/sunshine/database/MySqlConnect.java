@@ -14,7 +14,6 @@ public class MySqlConnect {
     private ResultSet resultSet = null;
 
     public Connection openConnection() {
-        if (connection == null) {
 
             LOG.debug("opening connection");
 
@@ -38,7 +37,6 @@ public class MySqlConnect {
 
                 LOG.error(String.format("SQL exception: %s", exception.getMessage()), exception);
             }
-        }
 
         return connection;
     }
@@ -53,9 +51,9 @@ public class MySqlConnect {
 //                resultSet.close();
 //            }
 //
-            if (preparedStatement != null) {
-                preparedStatement.close();
-            }
+//            if (preparedStatement != null) {
+//                preparedStatement.close();
+//            }
 
             if (connection != null) {
                 connection.close();
