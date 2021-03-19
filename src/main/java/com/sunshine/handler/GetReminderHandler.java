@@ -94,7 +94,7 @@ public class GetReminderHandler implements RequestHandler<APIGatewayProxyRequest
         }
 
         finally {
-            closeConnection();
+            mySqlConnect.closeConnection();
         }
 
 
@@ -114,23 +114,23 @@ public class GetReminderHandler implements RequestHandler<APIGatewayProxyRequest
     }
 
 
-    private void closeConnection() {
-        try {
-            if (resultSet != null) {
-                resultSet.close();
-            }
-
-            if (preparedStatement != null) {
-                preparedStatement.close();
-            }
-
-            if (connection != null) {
-                connection.close();
-            }
-        }
-        catch (Exception e) {
-            LOG.error("Unable to close connections to MySQL - {}", e.getMessage());
-        }
-    }
+//    private void closeConnection() {
+//        try {
+//            if (resultSet != null) {
+//                resultSet.close();
+//            }
+//
+//            if (preparedStatement != null) {
+//                preparedStatement.close();
+//            }
+//
+//            if (connection != null) {
+//                connection.close();
+//            }
+//        }
+//        catch (Exception e) {
+//            LOG.error("Unable to close connections to MySQL - {}", e.getMessage());
+//        }
+//    }
 
 }
