@@ -43,6 +43,12 @@ public class GetReminderHandler implements RequestHandler<APIGatewayProxyRequest
         Reminder reminder;
 
         try {
+            // create database object  - already started
+            // open connection on database - done
+            // get data pass in path parameter
+            // call database object to get data with parameter as reminder object
+            // close connection to database object - done
+            // getReminder - build collection - array list
 
             preparedStatement = mySqlConnect.connect().prepareStatement("SELECT * FROM reminder WHERE id =" +
                     " ?");

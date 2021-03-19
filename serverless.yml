@@ -22,19 +22,19 @@ package:
 
 functions:
   get-reminder-java-api:
-    handler: com.sunshine.GetReminderHandler
+    handler: com.sunshine.handler.GetReminderHandler
     events:
       - httpApi:
           path: /users/{userId}/reminders/{reminderId}
           method: get
   save-reminder-java-api:
-    handler: com.sunshine.SaveReminderHandler
+    handler: com.sunshine.handler.SaveReminderHandler
     events:
       - httpApi:
           path: /users/{userId}/reminders
           method: post
   delete-reminder-java-api:
-    handler: com.sunshine.DeleteReminderHandler
+    handler: com.sunshine.handler.DeleteReminderHandler
     events:
       - httpApi:
           path: /users/{userId}/reminders/{reminderId}
