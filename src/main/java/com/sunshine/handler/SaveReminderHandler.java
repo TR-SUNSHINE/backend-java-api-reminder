@@ -25,7 +25,6 @@ public class SaveReminderHandler implements RequestHandler<APIGatewayProxyReques
 
     MySqlConnect mySqlConnect = new MySqlConnect();
 
-//    private PreparedStatement preparedStatement = null;
     private ResultSet resultSet = null;
 
     @Override
@@ -47,11 +46,6 @@ public class SaveReminderHandler implements RequestHandler<APIGatewayProxyReques
         response.setHeaders(headers);
 
         try {
-            // create database object  - already started
-            // open connection on database - done
-            // build reminder object - in Handler - further separate out after
-            // call database object to insert data with parameter as reminder object
-            // close connection to database object - done
 
             Reminder reminder = objectMapper.readValue(requestBody, Reminder.class);
             reminder.setUserId(UserId);
@@ -61,17 +55,9 @@ public class SaveReminderHandler implements RequestHandler<APIGatewayProxyReques
 
             mySqlConnect.insertReminder(reminder);
 
-//            preparedStatement = mySqlConnect.connect().prepareStatement("INSERT INTO reminder (id, " +
-//                    "userID," +
-//                    "reminderTime) VALUES(?, ?, ?)");
-//            preparedStatement.setString(1, UUID.randomUUID().toString());
-//            preparedStatement.setString(2, UserId);
-//            preparedStatement.setTimestamp(3, Timestamp.valueOf(reminder.getReminderTime()));
-//            preparedStatement.execute();
-
             mySqlConnect.closeConnection();
 
-            // return reminderId to frontend
+            // send reminderId to frontend
 
         } catch (IOException exception){
             LOG.error(String.format("Unable to unmarshall JSON for adding a reminder %s",
@@ -79,10 +65,7 @@ public class SaveReminderHandler implements RequestHandler<APIGatewayProxyReques
             response.setStatusCode(500);
 
         }
-//        catch (SQLException exception){
-//            LOG.error(String.format("SQL exception: %s",exception.getMessage()), exception);
-//            response.setStatusCode(500);
-//        }
+
         finally {
             mySqlConnect.closeConnection();
         }
