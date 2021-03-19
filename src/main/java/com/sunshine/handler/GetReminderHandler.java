@@ -1,6 +1,8 @@
 package com.sunshine.handler;
 
 import java.sql.*;
+
+import com.mysql.jdbc.ConnectionFeatureNotAvailableException;
 import com.sunshine.database.MySqlConnect;
 
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
@@ -53,15 +55,7 @@ public class GetReminderHandler implements RequestHandler<APIGatewayProxyRequest
 
             LOG.debug("attempting connection to database");
 
-            preparedStatement = mySqlConnect.prepareSQL(UserId, ReminderId);
-
-//                    .prepareStatement(
-//                    "SELECT * FROM" +
-//                    " reminder " +
-//                    "WHERE id = ? AND userID = ?");
-//            preparedStatement.setString(1, ReminderId);
-//            preparedStatement.setString(2, UserId);
-            resultSet = preparedStatement.executeQuery();
+            resultSet = mySqlConnect.readReminder(UserId, ReminderId);
 
                 while (resultSet.next()) {
 

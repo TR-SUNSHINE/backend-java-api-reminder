@@ -51,9 +51,9 @@ public class MySqlConnect {
 //                resultSet.close();
 //            }
 //
-//            if (preparedStatement != null) {
-//                preparedStatement.close();
-//            }
+            if (preparedStatement != null) {
+                preparedStatement.close();
+            }
 
             if (connection != null) {
                 connection.close();
@@ -85,11 +85,9 @@ public class MySqlConnect {
 
     }
 
-    public PreparedStatement prepareSQL(String UserId, String ReminderId){
+    public ResultSet readReminder(String UserId, String ReminderId){
 
-//        if (connection != null) {
-
-            LOG.debug("in getReminder");
+            LOG.debug("in readReminder");
 
             try {
 
@@ -98,18 +96,15 @@ public class MySqlConnect {
                         "WHERE id = ? AND userID = ?");
                 preparedStatement.setString(1, ReminderId);
                 preparedStatement.setString(2, UserId);
-//                resultSet = preparedStatement.executeQuery();
-
-                LOG.debug("Getting reminder; connection closed: {}",connection.isClosed() );
+                LOG.debug("Reading database - connection closed: {}",connection.isClosed() );
+                resultSet = preparedStatement.executeQuery();
 
             } catch (SQLException exception) {
 
                 LOG.error(String.format("SQL exception: %s", exception.getMessage()), exception);
-                // response.setStatusCode(500);
             }
 
-//        }
-        return preparedStatement;
+        return resultSet;
 
     }
 
