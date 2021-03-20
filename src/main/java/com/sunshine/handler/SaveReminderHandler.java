@@ -23,7 +23,7 @@ public class SaveReminderHandler implements RequestHandler<APIGatewayProxyReques
 
     private static final Logger LOG = LogManager.getLogger(SaveReminderHandler.class);
 
-    private ReminderService reminderService = new ReminderService();
+    private final ReminderService reminderService = new ReminderService();
 
     @Override
     public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent request,
