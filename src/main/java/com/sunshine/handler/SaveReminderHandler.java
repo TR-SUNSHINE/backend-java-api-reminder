@@ -1,5 +1,6 @@
 package com.sunshine.handler;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.sunshine.service.ReminderService;
 
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
@@ -37,16 +38,13 @@ public class SaveReminderHandler implements RequestHandler<APIGatewayProxyReques
 
         APIGatewayProxyResponseEvent response = null;
 
+        Reminder reminder = null;
+
         try {
 
-            Reminder reminder = objectMapper.readValue(requestBody, Reminder.class);
+            reminder = objectMapper.readValue(requestBody, Reminder.class);
             reminder.setUserId(UserId);
             reminder.setReminderId(UUID.randomUUID().toString());
-
-            response = reminderService.saveReminder(reminder);
-
-            String responseBody = objectMapper.writeValueAsString(reminder);
-            response.setBody(responseBody);
 
         } catch (IOException exception) {
             LOG.error(String.format("Unable to unmarshall JSON for adding a reminder %s",
@@ -54,6 +52,18 @@ public class SaveReminderHandler implements RequestHandler<APIGatewayProxyReques
             response.setStatusCode(500);
         }
 
+        response = reminderService.saveReminder(reminder);
+
+        try {
+            Map<String, String> reminderId = new HashMap<>();
+            reminderId.put("reminderId", reminder.getReminderId());
+            String responseBody = objectMapper.writeValueAsString(reminderId);
+            response.setBody(responseBody);
+
+        } catch (JsonProcessingException exception) {
+            LOG.error(String.format("Unable to marshall to JSON for sending in response body %s",
+                    exception.getMessage()));
+        }
 
         return response;
 
