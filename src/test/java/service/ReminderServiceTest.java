@@ -67,9 +67,7 @@ public class ReminderServiceTest {
     }
 
     @Test
-    @DisplayName("Test getReminder in ReminderService returns an array with 1 Reminder objects " +
-            "when " +
-            "updated")
+    @DisplayName("Test getReminder in ReminderService returns an array with 1 Reminder object")
     public void testGetReminderHappyPath(){
 
         // Arrange
@@ -102,6 +100,36 @@ public class ReminderServiceTest {
                         "does not " +
                         "return an array with a single Reminder object");
 
+    }
+
+    @Test
+    @DisplayName("Test getReminder in ReminderService returns an empty array when the reminder " +
+            "requested is" +
+            "not present in the database")
+    public void testGetReminderUnHappyPath(){
+
+        // Arrange
+        String reminderId = "abc";
+        String userId = "123";
+
+        LocalDateTime summerSolstice = LocalDateTime.of(2021, Month.JUNE, 21, 21, 30);
+        Reminder reminder = new Reminder(reminderId, userId,summerSolstice);
+        ArrayList<Reminder> reminderList = new ArrayList<>();
+
+        MySqlConnect mockMySqlConnect = mock(com.sunshine.database.MySqlConnect.class);
+        when(mockMySqlConnect.readReminder(userId, reminderId)).thenReturn(reminderList);
+
+        // Act
+        ReminderService reminderService = new ReminderService(mockMySqlConnect);
+
+        ArrayList<Reminder> response = reminderService.getReminder(userId, reminderId);
+
+        // Assert
+        assertEquals(0, response.size(),
+                "readReminder " +
+                        "does not " +
+                        "return an empty array when the reminder requested is not present in the " +
+                        "database");
     }
 
     @Test
