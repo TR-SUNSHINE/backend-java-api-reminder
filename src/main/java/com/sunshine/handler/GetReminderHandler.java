@@ -39,18 +39,25 @@ public class GetReminderHandler implements RequestHandler<APIGatewayProxyRequest
         headers.put("Access-Control-Allow-Origin", "*");
         response.setHeaders(headers);
 
-        ArrayList<Reminder> reminders = reminderService.getReminder(UserId, ReminderId);
+        if (UserId.length() != 36 || ReminderId.length() != 36) {
 
-        ObjectMapper objectMapper = new ObjectMapper();
+            response.setStatusCode(400);
 
-        try {
+        } else {
 
-            String responseBody = objectMapper.writeValueAsString(reminders);
-            response.setBody(responseBody);
+            ArrayList<Reminder> reminders = reminderService.getReminder(UserId, ReminderId);
 
-        } catch (JsonProcessingException exception) {
-            LOG.error("unable to marshal tasks array", exception);
-            response.setStatusCode(500);
+            ObjectMapper objectMapper = new ObjectMapper();
+
+            try {
+
+                String responseBody = objectMapper.writeValueAsString(reminders);
+                response.setBody(responseBody);
+
+            } catch (JsonProcessingException exception) {
+                LOG.error("unable to marshal tasks array", exception);
+                response.setStatusCode(500);
+            }
         }
 
         return response;
