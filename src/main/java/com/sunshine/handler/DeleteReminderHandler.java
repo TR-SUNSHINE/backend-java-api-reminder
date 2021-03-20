@@ -36,12 +36,19 @@ public class DeleteReminderHandler implements RequestHandler<APIGatewayProxyRequ
         headers.put("Access-Control-Allow-Origin", "*");
         response.setHeaders(headers);
 
-        try {
-            reminderService.deleteReminder(UserId, ReminderId);
+        if (UserId.length() != 36 || ReminderId.length() != 36) {
 
-        } catch (Exception exception){
-            LOG.error(String.format("Exception: %s", exception.getMessage()), exception);
-            response.setStatusCode(500);
+            response.setStatusCode(400);
+
+        } else {
+
+            try {
+                reminderService.deleteReminder(UserId, ReminderId);
+
+            } catch (Exception exception) {
+                LOG.error(String.format("Exception: %s", exception.getMessage()), exception);
+                response.setStatusCode(500);
+            }
         }
 
         return response;
