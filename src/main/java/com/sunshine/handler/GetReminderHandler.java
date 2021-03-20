@@ -1,10 +1,5 @@
 package com.sunshine.handler;
 
-import java.sql.*;
-
-import com.mysql.jdbc.ConnectionFeatureNotAvailableException;
-import com.sunshine.database.MySqlConnect;
-
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import com.amazonaws.services.lambda.runtime.Context;
@@ -12,28 +7,26 @@ import com.amazonaws.services.lambda.runtime.RequestHandler;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sunshine.service.ReminderService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.sunshine.model.Reminder;
 
+import java.util.HashMap;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Map;
 
 public class GetReminderHandler implements RequestHandler<APIGatewayProxyRequestEvent,
         APIGatewayProxyResponseEvent> {
 
     private static final Logger LOG = LogManager.getLogger(GetReminderHandler.class);
 
-    MySqlConnect mySqlConnect = new MySqlConnect();
-
-//    private Connection connection = null;
-    private PreparedStatement preparedStatement = null;
-     private ResultSet resultSet = null;
+    private final ReminderService reminderService = new ReminderService();
 
     @Override
     public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent request,
-                                                      Context context){
+                                                      Context context) {
 
         LOG.info("request received");
 
@@ -42,39 +35,11 @@ public class GetReminderHandler implements RequestHandler<APIGatewayProxyRequest
 
         APIGatewayProxyResponseEvent response = new APIGatewayProxyResponseEvent();
         response.setStatusCode(200);
-        List<Reminder> reminders = new ArrayList<>();
-        Reminder reminder;
+        Map<String, String> headers = new HashMap<>();
+        headers.put("Access-Control-Allow-Origin", "*");
+        response.setHeaders(headers);
 
-        try {
-            // create database object  - done
-            // open connection on database - done
-            // get data pass in path parameter
-            // call database object to get data with parameter as reminder object
-            // close connection to database object - done
-            // getReminder - build collection - array list
-
-            LOG.debug("attempting connection to database");
-
-            resultSet = mySqlConnect.readReminder(UserId, ReminderId);
-
-                while (resultSet.next()) {
-
-                    reminder = new Reminder(resultSet.getString("id"),
-                            resultSet.getString("userID"),
-                            resultSet.getTimestamp("reminderTime").toLocalDateTime());
-
-                    reminders.add(reminder);
-                }
-
-        } catch (SQLException exception){
-            LOG.error(String.format("SQL exception: %s", exception.getMessage()),
-             exception);
-            response.setStatusCode(500);
-
-        } finally {
-            mySqlConnect.closeConnection();
-        }
-
+        ArrayList<Reminder> reminders = reminderService.getReminder(UserId, ReminderId);
 
         ObjectMapper objectMapper = new ObjectMapper();
 
@@ -83,8 +48,9 @@ public class GetReminderHandler implements RequestHandler<APIGatewayProxyRequest
             String responseBody = objectMapper.writeValueAsString(reminders);
             response.setBody(responseBody);
 
-        } catch (JsonProcessingException exception){
+        } catch (JsonProcessingException exception) {
             LOG.error("unable to marshal tasks array", exception);
+            response.setStatusCode(500);
         }
 
         return response;

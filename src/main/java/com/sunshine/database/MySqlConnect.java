@@ -5,6 +5,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+
 public class MySqlConnect {
 
     private static final Logger LOG = LogManager.getLogger(MySqlConnect.class);
@@ -15,28 +18,28 @@ public class MySqlConnect {
 
     public Connection openConnection() {
 
-            LOG.debug("opening connection");
+        LOG.debug("opening connection");
 
-            try {
-                Class.forName("com.mysql.jdbc.Driver");
+        try {
+            Class.forName("com.mysql.jdbc.Driver");
 
-                LOG.debug(String.format("Connecting to DB on %s", System.getenv("DB_HOST")));
+            LOG.debug(String.format("Connecting to DB on %s", System.getenv("DB_HOST")));
 
-                connection = DriverManager.getConnection(String.format("jdbc:mysql://%s/%s?user=%s" +
-                                "&password=%s&useSSL=false",
-                        System.getenv("DB_HOST"),
-                        System.getenv("DB_NAME"),
-                        System.getenv("DB_USER"),
-                        System.getenv("DB_PASSWORD")));
+            connection = DriverManager.getConnection(String.format("jdbc:mysql://%s/%s?user=%s" +
+                            "&password=%s&useSSL=false",
+                    System.getenv("DB_HOST"),
+                    System.getenv("DB_NAME"),
+                    System.getenv("DB_USER"),
+                    System.getenv("DB_PASSWORD")));
 
-            } catch (ClassNotFoundException exception) {
+        } catch (ClassNotFoundException exception) {
 
-                LOG.error(String.format("ClassNotFoundException: %s", exception.getMessage()), exception);
+            LOG.error(String.format("ClassNotFoundException: %s", exception.getMessage()), exception);
 
-            } catch (SQLException exception) {
+        } catch (SQLException exception) {
 
-                LOG.error(String.format("SQL exception: %s", exception.getMessage()), exception);
-            }
+            LOG.error(String.format("SQL exception: %s", exception.getMessage()), exception);
+        }
 
         return connection;
     }
@@ -47,7 +50,7 @@ public class MySqlConnect {
 
         try {
 
-            if (resultSet != null){
+            if (resultSet != null) {
                 resultSet.close();
             }
 
@@ -63,13 +66,13 @@ public class MySqlConnect {
         }
     }
 
-    public int createReminder(Reminder reminder){
+    public int createReminder(Reminder reminder) {
 
-        LOG.debug("in createReminder");
+        LOG.debug("attempting connection to database in createReminder");
 
         int created = 0;
 
-        try{
+        try {
 
             preparedStatement = this.openConnection().prepareStatement("INSERT INTO reminder (id, " +
                     "userID," +
@@ -77,11 +80,11 @@ public class MySqlConnect {
             preparedStatement.setString(1, reminder.getReminderId());
             preparedStatement.setString(2, reminder.getUserId());
             preparedStatement.setTimestamp(3, Timestamp.valueOf(reminder.getReminderTime()));
-            LOG.debug("Creating in database - connection closed: {}",connection.isClosed() );
+            LOG.debug("Creating in database - connection closed: {}", connection.isClosed());
 
-           created = preparedStatement.executeUpdate();
+            created = preparedStatement.executeUpdate();
 
-        } catch (SQLException exception){
+        } catch (SQLException exception) {
 
             LOG.error(String.format("SQL exception: %s", exception.getMessage()), exception);
         }
@@ -90,35 +93,45 @@ public class MySqlConnect {
 
     }
 
-    public ResultSet readReminder(String UserId, String ReminderId){
+    public ArrayList<Reminder> readReminder(String UserId, String ReminderId) {
 
-            LOG.debug("in readReminder");
+        LOG.debug("attempting connection to database in readReminder");
+        ArrayList<Reminder> reminders = new ArrayList<>();
 
-            try {
+        try {
 
-                preparedStatement = this.openConnection().prepareStatement("SELECT * FROM " +
-                        "reminder " +
-                        "WHERE id = ? AND userID = ?");
-                preparedStatement.setString(1, ReminderId);
-                preparedStatement.setString(2, UserId);
-                LOG.debug("Reading database - connection closed: {}",connection.isClosed() );
-                resultSet = preparedStatement.executeQuery();
+            preparedStatement = this.openConnection().prepareStatement("SELECT * FROM " +
+                    "reminder " +
+                    "WHERE id = ? AND userID = ?");
+            preparedStatement.setString(1, ReminderId);
+            preparedStatement.setString(2, UserId);
+            LOG.debug("Reading database - connection closed: {}", connection.isClosed());
+            resultSet = preparedStatement.executeQuery();
 
-            } catch (SQLException exception) {
+            while (resultSet.next()) {
 
-                LOG.error(String.format("SQL exception: %s", exception.getMessage()), exception);
+                Reminder reminder = new Reminder(resultSet.getString("id"),
+                        resultSet.getString("userID"),
+                        resultSet.getTimestamp("reminderTime").toLocalDateTime());
+
+                reminders.add(reminder);
             }
 
-        return resultSet;
+        } catch (SQLException exception) {
+
+            LOG.error(String.format("SQL exception: %s", exception.getMessage()), exception);
+        }
+
+        return reminders;
 
     }
 
-    public int updateReminder (Reminder reminder){
+    public int updateReminder(Reminder reminder) {
 
-        LOG.debug("in updateReminder");
+        LOG.debug("attempting connection to database in updateReminder");
         int updated = 0;
 
-        try{
+        try {
 
             preparedStatement = this.openConnection().prepareStatement("UPDATE reminder SET " +
                     "reminderTime = ? WHERE id = " +
@@ -126,10 +139,10 @@ public class MySqlConnect {
             preparedStatement.setTimestamp(1, Timestamp.valueOf(reminder.getReminderTime()));
             preparedStatement.setString(2, reminder.getReminderId());
             preparedStatement.setString(3, reminder.getUserId());
-            LOG.debug("Updating database - connection closed: {}",connection.isClosed() );
+            LOG.debug("Updating database - connection closed: {}", connection.isClosed());
             updated = preparedStatement.executeUpdate();
 
-        } catch (SQLException exception){
+        } catch (SQLException exception) {
 
             LOG.error(String.format("SQL exception: %s", exception.getMessage()), exception);
 
@@ -139,9 +152,9 @@ public class MySqlConnect {
 
     }
 
-    public void deleteReminder (String UserId, String ReminderId){
+    public void deleteReminder(String UserId, String ReminderId) {
 
-        LOG.debug("in deleteReminder");
+        LOG.debug("attempting connection to database in deleteReminder");
 
         try {
 
@@ -149,10 +162,10 @@ public class MySqlConnect {
                     "WHERE id = ? AND userID = ?");
             preparedStatement.setString(1, ReminderId);
             preparedStatement.setString(2, UserId);
-            LOG.debug("Deleting from database - connection closed: {}",connection.isClosed() );
+            LOG.debug("Deleting from database - connection closed: {}", connection.isClosed());
             preparedStatement.execute();
 
-        } catch (SQLException exception){
+        } catch (SQLException exception) {
 
             LOG.error(String.format("SQL exception: %s", exception.getMessage()), exception);
         }
