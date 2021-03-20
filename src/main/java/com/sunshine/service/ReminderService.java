@@ -44,4 +44,11 @@ public class ReminderService {
         return mySqlConnect.updateReminder(reminder);
     }
 
+    public void deleteReminder(String userId, String reminderId){
+
+        LOG.info("deleteReminder in ReminderService");
+
+        mySqlConnect.deleteReminder(userId, reminderId);
+    }
+
 }

@@ -7,6 +7,7 @@ import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
+import com.sunshine.service.ReminderService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -18,9 +19,7 @@ public class DeleteReminderHandler implements RequestHandler<APIGatewayProxyRequ
 
     private static final Logger LOG = LogManager.getLogger(DeleteReminderHandler.class);
 
-    MySqlConnect mySqlConnect = new MySqlConnect();
-
-    private PreparedStatement preparedStatement = null;
+    private final ReminderService reminderService = new ReminderService();
 
     @Override
     public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent request,
@@ -38,12 +37,11 @@ public class DeleteReminderHandler implements RequestHandler<APIGatewayProxyRequ
         response.setHeaders(headers);
 
         try {
-            mySqlConnect.deleteReminder(UserId, ReminderId);
+            reminderService.deleteReminder(UserId, ReminderId);
+
         } catch (Exception exception){
             LOG.error(String.format("Exception: %s", exception.getMessage()), exception);
             response.setStatusCode(500);
-        } finally {
-            mySqlConnect.closeConnection();
         }
 
         return response;
