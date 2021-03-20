@@ -1,7 +1,6 @@
 package com.sunshine.handler;
 
-import java.sql.*;
-import com.sunshine.database.MySqlConnect;
+import com.sunshine.service.ReminderService;
 
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
@@ -23,12 +22,11 @@ public class SaveReminderHandler implements RequestHandler<APIGatewayProxyReques
 
     private static final Logger LOG = LogManager.getLogger(SaveReminderHandler.class);
 
-    MySqlConnect mySqlConnect = new MySqlConnect();
+    private ReminderService reminderService = new ReminderService();
 
     @Override
     public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent request,
-                                                      Context context){
-
+                                                      Context context) {
         LOG.info("request received");
 
         String UserId = request.getPathParameters().get("userId");
@@ -37,11 +35,7 @@ public class SaveReminderHandler implements RequestHandler<APIGatewayProxyReques
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
 
-        APIGatewayProxyResponseEvent response = new APIGatewayProxyResponseEvent();
-        response.setStatusCode(201);
-        Map<String, String> headers = new HashMap<>();
-        headers.put("Access-Control-Allow-Origin", "*");
-        response.setHeaders(headers);
+        APIGatewayProxyResponseEvent response = null;
 
         try {
 
@@ -49,19 +43,17 @@ public class SaveReminderHandler implements RequestHandler<APIGatewayProxyReques
             reminder.setUserId(UserId);
             reminder.setReminderId(UUID.randomUUID().toString());
 
-            mySqlConnect.createReminder(reminder);
+            response = reminderService.saveReminder(reminder);
 
-            // send reminderId to frontend
+            String responseBody = objectMapper.writeValueAsString(reminder);
+            response.setBody(responseBody);
 
-        } catch (IOException exception){
+        } catch (IOException exception) {
             LOG.error(String.format("Unable to unmarshall JSON for adding a reminder %s",
                     exception.getMessage()));
             response.setStatusCode(500);
         }
 
-        finally {
-            mySqlConnect.closeConnection();
-        }
 
         return response;
 
