@@ -146,10 +146,14 @@ public class MySqlConnect {
             LOG.debug("Updating database - connection closed: {}", connection.isClosed());
             updated = preparedStatement.executeUpdate();
 
+
         } catch (SQLException exception) {
 
             LOG.error(String.format("SQL exception: %s", exception.getMessage()), exception);
 
+        } finally {
+
+            this.closeConnection();
         }
 
         return updated;
