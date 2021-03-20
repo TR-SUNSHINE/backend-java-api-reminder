@@ -36,7 +36,12 @@ public class SaveReminderHandler implements RequestHandler<APIGatewayProxyReques
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
 
-        APIGatewayProxyResponseEvent response = null;
+        APIGatewayProxyResponseEvent response = new APIGatewayProxyResponseEvent();
+        response.setStatusCode(201);
+        Map<String, String> headers = new HashMap<>();
+        headers.put("Access-Control-Allow-Origin", "*");
+        response.setHeaders(headers);
+
 
         Reminder reminder = null;
 
@@ -52,17 +57,22 @@ public class SaveReminderHandler implements RequestHandler<APIGatewayProxyReques
             response.setStatusCode(500);
         }
 
-        response = reminderService.saveReminder(reminder);
+        if (reminderService.saveReminder(reminder) == 1) {
 
-        try {
-            Map<String, String> reminderId = new HashMap<>();
-            reminderId.put("reminderId", reminder.getReminderId());
-            String responseBody = objectMapper.writeValueAsString(reminderId);
-            response.setBody(responseBody);
+            try {
+                Map<String, String> reminderId = new HashMap<>();
+                reminderId.put("reminderId", reminder.getReminderId());
+                String responseBody = objectMapper.writeValueAsString(reminderId);
+                response.setBody(responseBody);
 
-        } catch (JsonProcessingException exception) {
-            LOG.error(String.format("Unable to marshall to JSON for sending in response body %s",
-                    exception.getMessage()));
+            } catch (JsonProcessingException exception) {
+                LOG.error(String.format("Unable to marshall to JSON for sending in response body %s",
+                        exception.getMessage()));
+            }
+
+        } else {
+            LOG.info("no reminder saved in saveReminder");
+            response.setStatusCode(500);
         }
 
         return response;

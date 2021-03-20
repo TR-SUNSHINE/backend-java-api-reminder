@@ -10,11 +10,8 @@ import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent
 import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 public class ReminderService {
 
@@ -22,25 +19,13 @@ public class ReminderService {
 
     private static final Logger LOG = LogManager.getLogger(ReminderService.class);
 
-    public APIGatewayProxyResponseEvent saveReminder(Reminder reminder) {
+    public int saveReminder(Reminder reminder) {
 
-        APIGatewayProxyResponseEvent response = new APIGatewayProxyResponseEvent();
-        Map<String, String> headers = new HashMap<>();
-        headers.put("Access-Control-Allow-Origin", "*");
-        response.setHeaders(headers);
+        LOG.info("saveReminder in ReminderService");
 
-        if (mySqlConnect.createReminder(reminder) == 1) {
-
-            response.setStatusCode(201);
-
-        } else {
-            response.setStatusCode(500);
-        }
-
-        return response;
+       return mySqlConnect.createReminder(reminder);
 
     }
-
 
     public ArrayList<Reminder> getReminder(String userId, String reminderId) {
 
