@@ -84,12 +84,14 @@ public class MySqlConnect {
 
             created = preparedStatement.executeUpdate();
 
-            this.closeConnection();
-
         } catch (SQLException exception) {
 
             LOG.error(String.format("SQL exception: %s", exception.getMessage()), exception);
+        } finally {
+
+            this.closeConnection();
         }
+
 
         return created;
 
@@ -119,11 +121,13 @@ public class MySqlConnect {
                 reminders.add(reminder);
             }
 
-            this.closeConnection();
-
         } catch (SQLException exception) {
 
             LOG.error(String.format("SQL exception: %s", exception.getMessage()), exception);
+
+        } finally {
+
+            this.closeConnection();
         }
 
         return reminders;
@@ -176,7 +180,11 @@ public class MySqlConnect {
         } catch (SQLException exception) {
 
             LOG.error(String.format("SQL exception: %s", exception.getMessage()), exception);
+        } finally {
+
+            this.closeConnection();
         }
+
 
     }
 
