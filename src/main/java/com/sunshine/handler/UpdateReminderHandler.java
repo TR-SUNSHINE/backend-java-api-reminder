@@ -49,25 +49,32 @@ public class UpdateReminderHandler implements RequestHandler<APIGatewayProxyRequ
 
         Reminder reminder = null;
 
-        try {
+        if (UserId.length() != 36 || ReminderId.length() != 36) {
 
-            reminder = objectMapper.readValue(requestBody, Reminder.class);
-            reminder.setUserId(UserId);
-            reminder.setReminderId(ReminderId);
-
-        } catch (IOException exception) {
-            LOG.error(String.format("Unable to unmarshall JSON for updating a reminder %s",
-                    exception.getMessage()));
-            response.setStatusCode(500);
-        }
-
-        if (reminderService.changeReminder(reminder) == 1) {
-
-            LOG.info("updated");
+            response.setStatusCode(400);
 
         } else {
-            LOG.info("update failed");
-            response.setStatusCode(500);
+
+            try {
+
+                reminder = objectMapper.readValue(requestBody, Reminder.class);
+                reminder.setUserId(UserId);
+                reminder.setReminderId(ReminderId);
+
+            } catch (IOException exception) {
+                LOG.error(String.format("Unable to unmarshall JSON for updating a reminder %s",
+                        exception.getMessage()));
+                response.setStatusCode(500);
+            }
+
+            if (reminderService.changeReminder(reminder) == 1) {
+
+                LOG.info("updated");
+
+            } else {
+                LOG.info("update failed");
+                response.setStatusCode(500);
+            }
         }
 
         return response;

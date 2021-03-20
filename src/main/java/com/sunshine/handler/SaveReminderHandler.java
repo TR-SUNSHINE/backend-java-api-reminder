@@ -42,37 +42,43 @@ public class SaveReminderHandler implements RequestHandler<APIGatewayProxyReques
         headers.put("Access-Control-Allow-Origin", "*");
         response.setHeaders(headers);
 
-
         Reminder reminder = null;
 
-        try {
+        if (UserId.length() != 36) {
 
-            reminder = objectMapper.readValue(requestBody, Reminder.class);
-            reminder.setUserId(UserId);
-            reminder.setReminderId(UUID.randomUUID().toString());
-
-        } catch (IOException exception) {
-            LOG.error(String.format("Unable to unmarshall JSON for adding a reminder %s",
-                    exception.getMessage()));
-            response.setStatusCode(500);
-        }
-
-        if (reminderService.saveReminder(reminder) == 1) {
-
-            try {
-                Map<String, String> reminderId = new HashMap<>();
-                reminderId.put("reminderId", reminder.getReminderId());
-                String responseBody = objectMapper.writeValueAsString(reminderId);
-                response.setBody(responseBody);
-
-            } catch (JsonProcessingException exception) {
-                LOG.error(String.format("Unable to marshall to JSON for sending in response body %s",
-                        exception.getMessage()));
-            }
+            response.setStatusCode(400);
 
         } else {
-            LOG.info("no reminder saved in saveReminder");
-            response.setStatusCode(500);
+
+            try {
+
+                reminder = objectMapper.readValue(requestBody, Reminder.class);
+                reminder.setUserId(UserId);
+                reminder.setReminderId(UUID.randomUUID().toString());
+
+            } catch (IOException exception) {
+                LOG.error(String.format("Unable to unmarshall JSON for adding a reminder %s",
+                        exception.getMessage()));
+                response.setStatusCode(500);
+            }
+
+            if (reminderService.saveReminder(reminder) == 1) {
+
+                try {
+                    Map<String, String> reminderId = new HashMap<>();
+                    reminderId.put("reminderId", reminder.getReminderId());
+                    String responseBody = objectMapper.writeValueAsString(reminderId);
+                    response.setBody(responseBody);
+
+                } catch (JsonProcessingException exception) {
+                    LOG.error(String.format("Unable to marshall to JSON for sending in response body %s",
+                            exception.getMessage()));
+                }
+
+            } else {
+                LOG.info("no reminder saved in saveReminder");
+                response.setStatusCode(500);
+            }
         }
 
         return response;
