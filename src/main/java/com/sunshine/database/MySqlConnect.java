@@ -63,9 +63,11 @@ public class MySqlConnect {
         }
     }
 
-    public void createReminder(Reminder reminder){
+    public int createReminder(Reminder reminder){
 
         LOG.debug("in createReminder");
+
+        int created = 0;
 
         try{
 
@@ -76,12 +78,15 @@ public class MySqlConnect {
             preparedStatement.setString(2, reminder.getUserId());
             preparedStatement.setTimestamp(3, Timestamp.valueOf(reminder.getReminderTime()));
             LOG.debug("Creating in database - connection closed: {}",connection.isClosed() );
-            preparedStatement.execute();
+
+           created = preparedStatement.executeUpdate();
 
         } catch (SQLException exception){
 
             LOG.error(String.format("SQL exception: %s", exception.getMessage()), exception);
         }
+
+        return created;
 
     }
 
@@ -127,6 +132,7 @@ public class MySqlConnect {
         } catch (SQLException exception){
 
             LOG.error(String.format("SQL exception: %s", exception.getMessage()), exception);
+
         }
 
         return updated;
