@@ -19,7 +19,9 @@ public class DeleteReminderHandler implements RequestHandler<APIGatewayProxyRequ
 
     private static final Logger LOG = LogManager.getLogger(DeleteReminderHandler.class);
 
-    private final ReminderService reminderService = new ReminderService();
+    private final MySqlConnect mySqlConnect = new MySqlConnect();
+
+    private final ReminderService reminderService = new ReminderService(mySqlConnect);
 
     @Override
     public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent request,

@@ -25,8 +25,9 @@ public class UpdateReminderHandler implements RequestHandler<APIGatewayProxyRequ
 
     private static final Logger LOG = LogManager.getLogger(SaveReminderHandler.class);
 
-    MySqlConnect mySqlConnect = new MySqlConnect();
-    private final ReminderService reminderService = new ReminderService();
+    private final MySqlConnect mySqlConnect = new MySqlConnect();
+
+    private final ReminderService reminderService = new ReminderService(mySqlConnect);
 
     @Override
     public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent request,

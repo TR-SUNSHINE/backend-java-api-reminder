@@ -7,6 +7,7 @@ import com.amazonaws.services.lambda.runtime.RequestHandler;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sunshine.database.MySqlConnect;
 import com.sunshine.service.ReminderService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -22,7 +23,9 @@ public class GetReminderHandler implements RequestHandler<APIGatewayProxyRequest
 
     private static final Logger LOG = LogManager.getLogger(GetReminderHandler.class);
 
-    private final ReminderService reminderService = new ReminderService();
+    private final MySqlConnect mySqlConnect = new MySqlConnect();
+
+    private final ReminderService reminderService = new ReminderService(mySqlConnect);
 
     @Override
     public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent request,
