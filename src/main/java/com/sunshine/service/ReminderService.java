@@ -15,15 +15,19 @@ import org.apache.logging.log4j.LogManager;
 
 public class ReminderService {
 
-    private MySqlConnect mySqlConnect = new MySqlConnect();
+    private final MySqlConnect mySqlConnect;
 
     private static final Logger LOG = LogManager.getLogger(ReminderService.class);
+
+    public ReminderService(MySqlConnect mySqlConnect){
+        this.mySqlConnect = mySqlConnect;
+    }
 
     public int saveReminder(Reminder reminder) {
 
         LOG.info("saveReminder in ReminderService");
 
-       return mySqlConnect.createReminder(reminder);
+       return this.mySqlConnect.createReminder(reminder);
 
     }
 
@@ -31,7 +35,7 @@ public class ReminderService {
 
         LOG.info("getReminder in ReminderService");
 
-        ArrayList<Reminder> reminders = mySqlConnect.readReminder(userId, reminderId);
+        ArrayList<Reminder> reminders = this.mySqlConnect.readReminder(userId, reminderId);
 
         return reminders;
 
@@ -41,14 +45,14 @@ public class ReminderService {
 
         LOG.info("updateReminder in ReminderService");
 
-        return mySqlConnect.updateReminder(reminder);
+        return this.mySqlConnect.updateReminder(reminder);
     }
 
     public void deleteReminder(String userId, String reminderId){
 
         LOG.info("deleteReminder in ReminderService");
 
-        mySqlConnect.deleteReminder(userId, reminderId);
+        this.mySqlConnect.deleteReminder(userId, reminderId);
     }
 
 }
