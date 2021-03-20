@@ -84,6 +84,8 @@ public class MySqlConnect {
 
             created = preparedStatement.executeUpdate();
 
+            this.closeConnection();
+
         } catch (SQLException exception) {
 
             LOG.error(String.format("SQL exception: %s", exception.getMessage()), exception);

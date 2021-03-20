@@ -37,8 +37,6 @@ public class ReminderService {
             response.setStatusCode(500);
         }
 
-        mySqlConnect.closeConnection();
-
         return response;
 
     }
