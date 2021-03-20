@@ -50,14 +50,8 @@ public class ReminderService {
 
         ArrayList<Reminder> reminders = mySqlConnect.readReminder(userId, reminderId);
 
-
-
-            mySqlConnect.closeConnection();
-
-
         return reminders;
 
     }
-
 
 }
