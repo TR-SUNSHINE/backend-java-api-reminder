@@ -37,4 +37,11 @@ public class ReminderService {
 
     }
 
+    public int changeReminder(Reminder reminder){
+
+        LOG.info("updateReminder in ReminderService");
+
+        return mySqlConnect.updateReminder(reminder);
+    }
+
 }
