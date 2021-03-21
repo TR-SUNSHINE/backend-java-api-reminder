@@ -49,12 +49,6 @@ public class GetRemindersHandler implements RequestHandler<APIGatewayProxyReques
 
             ArrayList<Reminder> reminders = reminderService.getReminders(UserId);
 
-            if (reminders.size() == 0){
-
-                response.setStatusCode(404);
-
-            } else {
-
                 ObjectMapper objectMapper = new ObjectMapper();
 
                 try {
@@ -66,8 +60,6 @@ public class GetRemindersHandler implements RequestHandler<APIGatewayProxyReques
                     LOG.error("unable to marshal tasks array", exception);
                     response.setStatusCode(500);
                 }
-
-            }
         }
 
         return response;
