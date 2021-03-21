@@ -13,6 +13,7 @@ import com.sunshine.service.ReminderService;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 
 public class ReminderServiceTest {
@@ -112,8 +113,6 @@ public class ReminderServiceTest {
         String reminderId = "abc";
         String userId = "123";
 
-        LocalDateTime summerSolstice = LocalDateTime.of(2021, Month.JUNE, 21, 21, 30);
-        Reminder reminder = new Reminder(reminderId, userId,summerSolstice);
         ArrayList<Reminder> reminderList = new ArrayList<>();
 
         MySqlConnect mockMySqlConnect = mock(com.sunshine.database.MySqlConnect.class);
@@ -129,6 +128,83 @@ public class ReminderServiceTest {
                 "readReminder " +
                         "does not " +
                         "return an empty array when the reminder requested is not present in the " +
+                        "database");
+    }
+
+    @Test
+    @DisplayName("Test getReminders in ReminderService returns an array with one or more Reminder objects")
+    public void testGetRemindersHappyPath(){
+
+        // Arrange
+        String userId = "f622d2f8-78c7-4419-ac0f-287409980f20";
+        String reminderId1 = "ff4fe5e6-f112-423b-9196-c1f9dd998851";
+        String reminderId2 = "7fc3423a-d367-4b6d-aa92-9252c4761774";
+
+        LocalDateTime summerSolstice = LocalDateTime.of(2021, Month.JUNE, 21, 21, 30);
+        LocalDateTime winterSolstice = LocalDateTime.of(2021, Month.DECEMBER, 21, 15, 30);
+        Reminder reminder1 = new Reminder(reminderId1, userId,summerSolstice);
+        Reminder reminder2 = new Reminder(reminderId2, userId,winterSolstice);
+        ArrayList<Reminder> reminderList = new ArrayList<>(Arrays.asList(reminder1,
+                reminder2));
+
+        MySqlConnect mockMySqlConnect = mock(com.sunshine.database.MySqlConnect.class);
+        when(mockMySqlConnect.readReminders(userId)).thenReturn(reminderList);
+
+        // Act
+        ReminderService reminderService = new ReminderService(mockMySqlConnect);
+
+        ArrayList<Reminder> response = reminderService.getReminders(userId);
+
+        // Assert
+        assertEquals("ff4fe5e6-f112-423b-9196-c1f9dd998851", response.get(0).getReminderId(),
+                "readReminder " +
+                        "does not " +
+                        "return an array correct Reminder objects");
+        assertEquals("f622d2f8-78c7-4419-ac0f-287409980f20", response.get(0).getUserId(),
+                "readReminder " +
+                        "does not " +
+                        "return an array with correct Reminder objects");
+        assertEquals(LocalDateTime.of(2021, Month.JUNE, 21, 21, 30), response.get(0).getReminderTime(),
+                "readReminder " +
+                        "does not " +
+                        "return an array with correct Reminder objects");
+        assertEquals("7fc3423a-d367-4b6d-aa92-9252c4761774", response.get(1).getReminderId(),
+                "readReminder " +
+                        "does not " +
+                        "return an array correct Reminder objects");
+        assertEquals("f622d2f8-78c7-4419-ac0f-287409980f20", response.get(1).getUserId(),
+                "readReminder " +
+                        "does not " +
+                        "return an array with correct Reminder objects");
+        assertEquals(LocalDateTime.of(2021, Month.DECEMBER, 21, 15,
+                30),
+                response.get(1).getReminderTime(),
+                "readReminder " +
+                        "does not " +
+                        "return an array with correct Reminder objects");
+    }
+
+    @Test
+    @DisplayName("Test getReminders in ReminderService returns an empty array when the userId is " +
+            "not present in the database")
+    public void testGetRemindersUnhappyPath(){
+
+        // Arrange
+        String userId = "abc";
+
+        ArrayList<Reminder> reminderList = new ArrayList<>();
+
+        MySqlConnect mockMySqlConnect = mock(com.sunshine.database.MySqlConnect.class);
+        when(mockMySqlConnect.readReminders(userId)).thenReturn(reminderList);
+
+        // Act
+        ReminderService reminderService = new ReminderService(mockMySqlConnect);
+
+        ArrayList<Reminder> response = reminderService.getReminders(userId);
+
+        // Assert
+        assertEquals(0, response.size(),
+                "readReminders does not return an empty array when the userId is not present in the " +
                         "database");
     }
 

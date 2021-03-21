@@ -134,6 +134,41 @@ public class MySqlConnect {
 
     }
 
+    public ArrayList<Reminder> readReminders(String UserId) {
+
+        LOG.debug("attempting connection to database in readReminders");
+        ArrayList<Reminder> reminders = new ArrayList<>();
+
+        try {
+
+            preparedStatement = this.openConnection().prepareStatement("SELECT * FROM " +
+                    "reminder WHERE userID = ? ORDER BY reminderTime");
+            preparedStatement.setString(1, UserId);
+            LOG.debug("Reading database - connection closed: {}", connection.isClosed());
+            resultSet = preparedStatement.executeQuery();
+
+            while (resultSet.next()) {
+
+                Reminder reminder = new Reminder(resultSet.getString("id"),
+                        resultSet.getString("userID"),
+                        resultSet.getTimestamp("reminderTime").toLocalDateTime());
+
+                reminders.add(reminder);
+            }
+
+        } catch (SQLException exception) {
+
+            LOG.error(String.format("SQL exception: %s", exception.getMessage()), exception);
+
+        } finally {
+
+            this.closeConnection();
+        }
+
+        return reminders;
+
+    }
+
     public int updateReminder(Reminder reminder) {
 
         LOG.debug("attempting connection to database in updateReminder");

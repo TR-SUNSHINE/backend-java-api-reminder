@@ -27,6 +27,12 @@ functions:
       - httpApi:
           path: /users/{userId}/reminders/{reminderId}
           method: get
+  get-reminders-java-api:
+    handler: com.sunshine.handler.GetRemindersHandler
+    events:
+      - httpApi:
+          path: /users/{userId}/reminders
+          method: get
   save-reminder-java-api:
     handler: com.sunshine.handler.SaveReminderHandler
     events:

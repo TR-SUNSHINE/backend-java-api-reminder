@@ -35,9 +35,15 @@ public class ReminderService {
 
         LOG.info("getReminder in ReminderService");
 
-        ArrayList<Reminder> reminders = this.mySqlConnect.readReminder(userId, reminderId);
+        return this.mySqlConnect.readReminder(userId, reminderId);
 
-        return reminders;
+    }
+
+    public ArrayList<Reminder> getReminders(String userId) {
+
+        LOG.info("getReminder in ReminderService");
+
+        return this.mySqlConnect.readReminders(userId);
 
     }
 
