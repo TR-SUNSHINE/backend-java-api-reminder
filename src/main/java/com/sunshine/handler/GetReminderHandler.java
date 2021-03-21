@@ -50,16 +50,24 @@ public class GetReminderHandler implements RequestHandler<APIGatewayProxyRequest
 
             ArrayList<Reminder> reminders = reminderService.getReminder(UserId, ReminderId);
 
-            ObjectMapper objectMapper = new ObjectMapper();
+            if (reminders.size() == 0){
 
-            try {
+                response.setStatusCode(404);
 
-                String responseBody = objectMapper.writeValueAsString(reminders);
-                response.setBody(responseBody);
+            } else {
 
-            } catch (JsonProcessingException exception) {
-                LOG.error("unable to marshal tasks array", exception);
-                response.setStatusCode(500);
+
+                ObjectMapper objectMapper = new ObjectMapper();
+
+                try {
+
+                    String responseBody = objectMapper.writeValueAsString(reminders);
+                    response.setBody(responseBody);
+
+                } catch (JsonProcessingException exception) {
+                    LOG.error("unable to marshal tasks array", exception);
+                    response.setStatusCode(500);
+                }
             }
         }
 
