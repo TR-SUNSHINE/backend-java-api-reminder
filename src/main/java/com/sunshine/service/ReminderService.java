@@ -3,12 +3,11 @@ package com.sunshine.service;
 import com.sunshine.model.Reminder;
 import com.sunshine.database.MySqlConnect;
 
-import java.sql.*;
-
-import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
-
 import org.apache.logging.log4j.Logger;
 
+import java.lang.reflect.Array;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 
 import org.apache.logging.log4j.LogManager;
@@ -45,6 +44,28 @@ public class ReminderService {
 
         return this.mySqlConnect.readReminders(userId);
 
+    }
+
+    public ArrayList<Reminder> sendReminder(String userId) {
+
+        LOG.info("sendReminder in ReminderService");
+
+        ArrayList<Reminder> reminders =  this.mySqlConnect.readReminders(userId);
+
+        LocalDateTime latestReminderTime = reminders.get(reminders.size() - 1).getReminderTime();
+
+        int isInFuture = latestReminderTime.compareTo(LocalDateTime.now());
+
+        long difference = ChronoUnit.MINUTES.between(LocalDateTime.now(), latestReminderTime);
+        LOG.debug("Difference between reminder & now: {}", difference);
+        if (isInFuture > 0 && (difference > 20 && difference < 61)){
+
+            return new ArrayList<>(reminders.subList(reminders.size() - 1, reminders.size()));
+
+        } else {
+
+            return new ArrayList<>();
+        }
     }
 
     public int changeReminder(Reminder reminder){

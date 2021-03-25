@@ -51,5 +51,11 @@ functions:
       - httpApi:
           path: /users/{userId}/reminders/{reminderId}
           method: put
+  send-reminder-java-api:
+    handler: com.sunshine.handler.SendReminderHandler
+    events:
+      - httpApi:
+          path: /users/{userId}/reminder
+          method: get
 
 
