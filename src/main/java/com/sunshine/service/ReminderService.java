@@ -58,7 +58,7 @@ public class ReminderService {
 
         long difference = ChronoUnit.MINUTES.between(LocalDateTime.now(), latestReminderTime);
         LOG.debug("Difference between reminder & now: {}", difference);
-        if (isInFuture > 0 && (difference > 20 && difference < 61)){
+        if (isInFuture > 0 && (difference > 55 && difference < 65)){
 
             return new ArrayList<>(reminders.subList(reminders.size() - 1, reminders.size()));
 

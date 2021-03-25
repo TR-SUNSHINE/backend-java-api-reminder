@@ -5,6 +5,15 @@ import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 
+import com.amazonaws.regions.Regions;
+import com.amazonaws.services.simpleemail.AmazonSimpleEmailService;
+import com.amazonaws.services.simpleemail.AmazonSimpleEmailServiceClientBuilder;
+import com.amazonaws.services.simpleemail.model.Body;
+import com.amazonaws.services.simpleemail.model.Content;
+import com.amazonaws.services.simpleemail.model.Destination;
+import com.amazonaws.services.simpleemail.model.Message;
+import com.amazonaws.services.simpleemail.model.SendEmailRequest;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sunshine.database.MySqlConnect;
@@ -18,6 +27,8 @@ import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.Map;
 
+
+
 public class SendReminderHandler implements RequestHandler<APIGatewayProxyRequestEvent,
         APIGatewayProxyResponseEvent> {
 
@@ -30,6 +41,8 @@ public class SendReminderHandler implements RequestHandler<APIGatewayProxyReques
     static final String FROM = "ranaqrenawi@gmail.com";
 
     static final String TO = "engranaahmad@gmail.com";
+
+//    static final String CONFIGSET = "ConfigSet";
 
     // subject line for email
     static final String SUBJECT = "Remember to go for your walk :-)";
@@ -70,8 +83,30 @@ public class SendReminderHandler implements RequestHandler<APIGatewayProxyReques
                 String responseBody = objectMapper.writeValueAsString(reminder);
                 response.setBody(responseBody);
 
+                AmazonSimpleEmailService client =
+                        AmazonSimpleEmailServiceClientBuilder.standard().withRegion(Regions.EU_WEST_2).build();
+
+                SendEmailRequest emailRequest = new SendEmailRequest()
+                        .withDestination(
+                                new Destination().withToAddresses(TO))
+                        .withMessage(new Message()
+                                .withBody(new Body()
+                                        .withHtml(new Content()
+                                                .withCharset("UTF-8").withData(HTMLBODY))
+                                        .withText(new Content()
+                                                .withCharset("UTF-8").withData(TEXTBODY)))
+                                .withSubject(new Content()
+                                        .withCharset("UTF-8").withData(SUBJECT)))
+                        .withSource(FROM);
+//                         .withConfigurationSetName(CONFIGSET);
+
+                client.sendEmail(emailRequest);
+                LOG.info("Email sent :-)");
             } catch (JsonProcessingException exception) {
                 LOG.error("unable to marshal tasks array", exception);
+                response.setStatusCode(500);
+            } catch (Exception exception){
+                LOG.error("Email not sent", exception);
                 response.setStatusCode(500);
             }
         }
