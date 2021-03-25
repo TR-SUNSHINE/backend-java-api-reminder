@@ -57,5 +57,9 @@ functions:
       - httpApi:
           path: /users/{userId}/reminder
           method: get
+  simpleSchedulerTrigger:
+    handler: com.sunshine.handler.SimpleSchedulerHandler
+    events:
+      - schedule: rate(5 minutes)
 
 

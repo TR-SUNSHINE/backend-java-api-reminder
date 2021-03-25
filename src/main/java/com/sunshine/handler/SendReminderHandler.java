@@ -21,11 +21,25 @@ import java.util.Map;
 public class SendReminderHandler implements RequestHandler<APIGatewayProxyRequestEvent,
         APIGatewayProxyResponseEvent> {
 
-    private static final Logger LOG = LogManager.getLogger(GetReminderHandler.class);
+    private static final Logger LOG = LogManager.getLogger(SendReminderHandler.class);
 
     private final MySqlConnect mySqlConnect = new MySqlConnect();
 
     private final ReminderService reminderService = new ReminderService(mySqlConnect);
+
+    static final String FROM = "ranaqrenawi@gmail.com";
+
+    static final String TO = "engranaahmad@gmail.com";
+
+    // subject line for email
+    static final String SUBJECT = "Remember to go for your walk :-)";
+
+    // HTML body for email
+    static final String HTMLBODY = "<h1>Remember your walk</h1> <p>This email was sent to remind " +
+            "you to go for your walk";
+
+    // email body for recipients with non-html email clients
+    static final String TEXTBODY = "This is a reminder to go for your walk";
 
     @Override
     public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent request,
