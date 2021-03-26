@@ -39,21 +39,10 @@ public class SendNotificationsHandler implements RequestHandler<APIGatewayProxyR
 
     private final ReminderService reminderService = new ReminderService(mySqlConnect);
 
-    static final String FROM = "ranaqrenawi@gmail.com";
-
-    static final String TO = "engranaahmad@gmail.com";
+    private final String FROM = "ranaqrenawi@gmail.com";
 
 //    static final String CONFIGSET = "ConfigSet";
 
-    // subject line for email
-    static final String SUBJECT = "Remember to go for your walk :-)";
-
-    // HTML body for email
-    static final String HTMLBODY = "<h1>Remember your walk</h1> <p>This email was sent to remind " +
-            "you to go for your walk";
-
-    // email body for recipients with non-html email clients
-    static final String TEXTBODY = "This is a reminder to go for your walk";
 
     @Override
     public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent request,
@@ -81,25 +70,51 @@ public class SendNotificationsHandler implements RequestHandler<APIGatewayProxyR
             }
 
             try {
-            AmazonSimpleEmailService client =
+                for (int i = 0; i < notifications.size(); i++) {
+
+                    // subject line for email
+                    String subject = String.format("Remember to go for your walk, %s",
+                            notifications.get(i).getUserName());
+
+                    // HTML body for email
+                    String htmlbody = String.format("<h1>Hi %s, remember your walk at %s:00</h1> " +
+                            "<p>This " +
+                            "email " +
+                            "was sent " +
+                            "to " +
+                            "remind" +
+                            " " +
+                            "you to go for your walk", notifications.get(i).getUserName(),
+                            notifications.get(i).getReminderTime().getHour() );
+
+                    // email body for recipients with non-html email clients
+                    String textbody = String.format("Hi %s, This is a reminder to go for your " +
+                            "walk at %s:00", notifications.get(i).getUserName(),
+                            notifications.get(i).getReminderTime().getHour());
+
+                    LOG.debug("notification email: {}", notifications.get(i).getEmail());
+
+
+                AmazonSimpleEmailService client =
                         AmazonSimpleEmailServiceClientBuilder.standard().withRegion(Regions.EU_WEST_2).build();
 
                 SendEmailRequest emailRequest = new SendEmailRequest()
                         .withDestination(
-                                new Destination().withToAddresses(TO))
+                                new Destination().withToAddresses(notifications.get(i).getEmail()))
                         .withMessage(new Message()
                                 .withBody(new Body()
                                         .withHtml(new Content()
-                                                .withCharset("UTF-8").withData(HTMLBODY))
+                                                .withCharset("UTF-8").withData(htmlbody))
                                         .withText(new Content()
-                                                .withCharset("UTF-8").withData(TEXTBODY)))
+                                                .withCharset("UTF-8").withData(textbody)))
                                 .withSubject(new Content()
-                                        .withCharset("UTF-8").withData(SUBJECT)))
+                                        .withCharset("UTF-8").withData(subject)))
                         .withSource(FROM);
 //                         .withConfigurationSetName(CONFIGSET);
 
                 client.sendEmail(emailRequest);
                 LOG.info("Email sent :-)");
+            }
             } catch (Exception exception){
                     LOG.error("Email not sent", exception);
                    response.setStatusCode(200);
