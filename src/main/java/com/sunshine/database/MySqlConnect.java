@@ -177,7 +177,15 @@ public class MySqlConnect {
 
         try {
 
-            preparedStatement = this.openConnection().prepareStatement("SELECT reminder.id AS reminderId, reminder.reminderTime AS reminderTime, reminder.userID AS userID, user.email as userEmail, user.userName AS userName FROM reminder INNER JOIN user ON user.id = reminder.useriD ORDER BY reminder.reminderTime");
+            preparedStatement = this.openConnection().prepareStatement("SELECT " +
+                    "reminder.id AS reminderId, " +
+                    "reminder.reminderTime AS reminderTime, " +
+                    "reminder.userID AS userID, " +
+                    "user.email as userEmail, " +
+                    "user.userName AS userName " +
+                    "FROM reminder INNER JOIN user ON user.id = reminder.useriD " +
+                    "WHERE reminderTime > now()" +
+                    "ORDER BY reminder.reminderTime");
             LOG.debug("Reading database - connection closed: {}", connection.isClosed());
             resultSet = preparedStatement.executeQuery();
 

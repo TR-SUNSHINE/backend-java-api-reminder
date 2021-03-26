@@ -53,6 +53,34 @@ public class ReminderService {
 
         ArrayList<Notification> notifications =  this.mySqlConnect.readNotifications();
 
+        notifications.removeIf(notification -> notification.getReminderTime().compareTo(LocalDateTime.now()) < 0);
+//
+//        for(int i=0;i< notifications.size();i++){
+//
+//            if (notifications.get(i).getReminderTime().getDayOfMonth() != 26)
+//                notifications.remove(notifications.get(i));
+//            LOG.debug("notification email: {}", notifications.get(i).getEmail());
+//        }
+
+        LOG.debug("notifications length: {}", notifications.size());
+
+
+//        LocalDateTime latestReminderTime = notifications.get(notifications.size() - 1).getReminderTime();
+
+//        int isInFuture = notification.compareTo(LocalDateTime.now());
+//
+//        long difference = ChronoUnit.MINUTES.between(LocalDateTime.now(), latestReminderTime);
+//        LOG.debug("Difference between reminder & now: {}", difference);
+//        if (isInFuture > 0 && (difference > 55 && difference < 65)){
+
+//            return new ArrayList<>(reminders.subList(reminders.size() - 1, reminders.size()));
+
+//        } else {
+//
+//            return new ArrayList<>();
+//        }
+
+
         return notifications;
 
 //        LocalDateTime latestReminderTime = notifications.get(notifications.size() - 1).getReminderTime();
