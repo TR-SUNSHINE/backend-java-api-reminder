@@ -1,5 +1,6 @@
 package com.sunshine.database;
 
+import com.sunshine.model.Notification;
 import com.sunshine.model.Reminder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -169,25 +170,26 @@ public class MySqlConnect {
 
     }
 
-    public ArrayList<Reminder> readNotifications() {
+    public ArrayList<Notification> readNotifications() {
 
         LOG.debug("attempting connection to database in readReminders");
-        ArrayList<Reminder> notifications = new ArrayList<>();
+        ArrayList<Notification> notifications = new ArrayList<>();
 
         try {
 
-            preparedStatement = this.openConnection().prepareStatement("SELECT * FROM " +
-                    "reminder ORDER BY reminderTime");
+            preparedStatement = this.openConnection().prepareStatement("SELECT reminder.id AS reminderId, reminder.reminderTime AS reminderTime, reminder.userID AS userID, user.email as userEmail, user.userName AS userName FROM reminder INNER JOIN user ON user.id = reminder.useriD ORDER BY reminder.reminderTime");
             LOG.debug("Reading database - connection closed: {}", connection.isClosed());
             resultSet = preparedStatement.executeQuery();
 
             while (resultSet.next()) {
 
-                Reminder reminder = new Reminder(resultSet.getString("id"),
+                Notification notification = new Notification(resultSet.getString("reminderId"),
+                        resultSet.getTimestamp("reminderTime").toLocalDateTime(),
                         resultSet.getString("userID"),
-                        resultSet.getTimestamp("reminderTime").toLocalDateTime());
+                        resultSet.getString("userEmail"),
+                        resultSet.getString("userName"));
 
-                notifications.add(reminder);
+                notifications.add(notification);
             }
 
         } catch (SQLException exception) {

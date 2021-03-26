@@ -1,5 +1,6 @@
 package com.sunshine.service;
 
+import com.sunshine.model.Notification;
 import com.sunshine.model.Reminder;
 import com.sunshine.database.MySqlConnect;
 
@@ -46,11 +47,11 @@ public class ReminderService {
 
     }
 
-    public ArrayList<Reminder> sendNotifications() {
+    public ArrayList<Notification> sendNotifications() {
 
         LOG.info("sendNotifications in ReminderService");
 
-        ArrayList<Reminder> notifications =  this.mySqlConnect.readNotifications();
+        ArrayList<Notification> notifications =  this.mySqlConnect.readNotifications();
 
         return notifications;
 

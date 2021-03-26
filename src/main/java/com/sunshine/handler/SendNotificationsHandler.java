@@ -17,6 +17,7 @@ import com.amazonaws.services.simpleemail.model.SendEmailRequest;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sunshine.database.MySqlConnect;
+import com.sunshine.model.Notification;
 import com.sunshine.service.ReminderService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -66,13 +67,13 @@ public class SendNotificationsHandler implements RequestHandler<APIGatewayProxyR
         headers.put("Access-Control-Allow-Origin", "*");
         response.setHeaders(headers);
 
-            ArrayList<Reminder> reminder = reminderService.sendNotifications();
+            ArrayList<Notification> notifications = reminderService.sendNotifications();
 
             ObjectMapper objectMapper = new ObjectMapper();
 
             try {
 
-                String responseBody = objectMapper.writeValueAsString(reminder);
+                String responseBody = objectMapper.writeValueAsString(notifications);
                 response.setBody(responseBody);
             } catch (JsonProcessingException exception) {
                 LOG.error("unable to marshal tasks array", exception);
