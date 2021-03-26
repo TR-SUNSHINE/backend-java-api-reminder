@@ -56,13 +56,13 @@ public class SendNotificationsHandler implements RequestHandler<APIGatewayProxyR
         headers.put("Access-Control-Allow-Origin", "*");
         response.setHeaders(headers);
 
-            ArrayList<Notification> notifications = reminderService.sendNotifications();
+            ArrayList<Notification> currentNotifications = reminderService.sendNotifications();
 
             ObjectMapper objectMapper = new ObjectMapper();
 
             try {
 
-                String responseBody = objectMapper.writeValueAsString(notifications);
+                String responseBody = objectMapper.writeValueAsString(currentNotifications);
                 response.setBody(responseBody);
             } catch (JsonProcessingException exception) {
                 LOG.error("unable to marshal tasks array", exception);
@@ -70,11 +70,11 @@ public class SendNotificationsHandler implements RequestHandler<APIGatewayProxyR
             }
 
             try {
-                for (int i = 0; i < notifications.size(); i++) {
+                for (int i = 0; i < currentNotifications.size(); i++) {
 
                     // subject line for email
                     String subject = String.format("Remember to go for your walk, %s",
-                            notifications.get(i).getUserName());
+                            currentNotifications.get(i).getUserName());
 
                     // HTML body for email
                     String htmlbody = String.format("<h1>Hi %s, remember your walk at %s:00</h1> " +
@@ -84,15 +84,15 @@ public class SendNotificationsHandler implements RequestHandler<APIGatewayProxyR
                             "to " +
                             "remind" +
                             " " +
-                            "you to go for your walk", notifications.get(i).getUserName(),
-                            notifications.get(i).getReminderTime().getHour() );
+                            "you to go for your walk", currentNotifications.get(i).getUserName(),
+                            currentNotifications.get(i).getReminderTime().getHour() );
 
                     // email body for recipients with non-html email clients
                     String textbody = String.format("Hi %s, This is a reminder to go for your " +
-                            "walk at %s:00", notifications.get(i).getUserName(),
-                            notifications.get(i).getReminderTime().getHour());
+                            "walk at %s:00", currentNotifications.get(i).getUserName(),
+                            currentNotifications.get(i).getReminderTime().getHour());
 
-                    LOG.debug("notification email: {}", notifications.get(i).getEmail());
+                    LOG.debug("notification email: {}", currentNotifications.get(i).getEmail());
 
 
                 AmazonSimpleEmailService client =
@@ -100,7 +100,7 @@ public class SendNotificationsHandler implements RequestHandler<APIGatewayProxyR
 
                 SendEmailRequest emailRequest = new SendEmailRequest()
                         .withDestination(
-                                new Destination().withToAddresses(notifications.get(i).getEmail()))
+                                new Destination().withToAddresses(currentNotifications.get(i).getEmail()))
                         .withMessage(new Message()
                                 .withBody(new Body()
                                         .withHtml(new Content()
