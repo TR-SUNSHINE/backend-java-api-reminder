@@ -29,10 +29,10 @@ import java.util.Map;
 
 
 
-public class SendReminderHandler implements RequestHandler<APIGatewayProxyRequestEvent,
+public class SendNotificationsHandler implements RequestHandler<APIGatewayProxyRequestEvent,
         APIGatewayProxyResponseEvent> {
 
-    private static final Logger LOG = LogManager.getLogger(SendReminderHandler.class);
+    private static final Logger LOG = LogManager.getLogger(SendNotificationsHandler.class);
 
     private final MySqlConnect mySqlConnect = new MySqlConnect();
 
@@ -60,21 +60,13 @@ public class SendReminderHandler implements RequestHandler<APIGatewayProxyReques
 
         LOG.info("request received");
 
-        String UserId = request.getPathParameters().get("userId");
-
         APIGatewayProxyResponseEvent response = new APIGatewayProxyResponseEvent();
         response.setStatusCode(200);
         Map<String, String> headers = new HashMap<>();
         headers.put("Access-Control-Allow-Origin", "*");
         response.setHeaders(headers);
 
-        if (UserId.length() != 36) {
-
-            response.setStatusCode(400);
-
-        } else {
-
-            ArrayList<Reminder> reminder = reminderService.sendReminder(UserId);
+            ArrayList<Reminder> reminder = reminderService.sendNotifications();
 
             ObjectMapper objectMapper = new ObjectMapper();
 
@@ -82,8 +74,13 @@ public class SendReminderHandler implements RequestHandler<APIGatewayProxyReques
 
                 String responseBody = objectMapper.writeValueAsString(reminder);
                 response.setBody(responseBody);
+            } catch (JsonProcessingException exception) {
+                LOG.error("unable to marshal tasks array", exception);
+                response.setStatusCode(500);
+            }
 
-                AmazonSimpleEmailService client =
+            try {
+            AmazonSimpleEmailService client =
                         AmazonSimpleEmailServiceClientBuilder.standard().withRegion(Regions.EU_WEST_2).build();
 
                 SendEmailRequest emailRequest = new SendEmailRequest()
@@ -102,14 +99,10 @@ public class SendReminderHandler implements RequestHandler<APIGatewayProxyReques
 
                 client.sendEmail(emailRequest);
                 LOG.info("Email sent :-)");
-            } catch (JsonProcessingException exception) {
-                LOG.error("unable to marshal tasks array", exception);
-                response.setStatusCode(500);
             } catch (Exception exception){
-                LOG.error("Email not sent", exception);
-                response.setStatusCode(500);
-            }
-        }
+                    LOG.error("Email not sent", exception);
+                   response.setStatusCode(200);
+          }
 
         return response;
 

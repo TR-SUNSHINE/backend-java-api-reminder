@@ -20,27 +20,40 @@ public class SimpleSchedulerHandler implements RequestHandler<Void, Void>{
     public Void handleRequest(Void input, Context context){
 
         LOG.info("About to check availability of https://ia7thtfozg.execute-api.eu-west-2" +
-                ".amazonaws.com/users/{userId}/reminder ");
+                ".amazonaws.com/notifications");
 
         try {
+            LOG.info("about to execute setFollowRedirects");
             HttpURLConnection.setFollowRedirects(false);
+            LOG.info("about to open Connection");
             HttpURLConnection con = (HttpURLConnection) new URL("https://ia7thtfozg.execute-api" +
-                    ".eu-west-2.amazonaws.com/users/5e37e4d7-d053-4936-8827-01500c10a959/reminder").openConnection();
+                    ".eu-west-2.amazonaws.com/notifications").openConnection();
+            LOG.info("about to setRequestMethod");
             con.setRequestMethod("GET");
-            con.setConnectTimeout(3000); //set timeout to 2 seconds
-            con.setReadTimeout(3000);
+            LOG.info("about to setConnectTimeout");
+            con.setConnectTimeout(3000); //set timeout to 3 seconds
+            LOG.info("about to setReadTimeout");
+            con.setReadTimeout(10000);
+            LOG.info("about to getResponseCode");
             int responseCode = con.getResponseCode();
             LOG.info(String.format("Response code: %s", responseCode));
 
+            LOG.info("about to go to if clause");
             if (responseCode == HttpURLConnection.HTTP_OK) {
+                LOG.info("about to BufferedReader");
                 BufferedReader in = new BufferedReader(new InputStreamReader(
                         con.getInputStream()));
+                LOG.info("about to String inline");
                 String inputLine;
+                LOG.info("about to buffer response");
                 StringBuffer response = new StringBuffer();
 
+                LOG.info("about to do while loop");
                 while ((inputLine = in.readLine()) != null) {
+                    LOG.debug("about append to inputLine");
                     response.append(inputLine);
                 }
+                LOG.info("about append to in.close");
                 in.close();
 
                 LOG.info(response.toString());
@@ -54,6 +67,7 @@ public class SimpleSchedulerHandler implements RequestHandler<Void, Void>{
         } catch (java.io.IOException exception){
             LOG.debug("IOException: {}", exception.getMessage());
         }
+        LOG.debug("about to return null");
         return null;
     }
 }

@@ -51,11 +51,11 @@ functions:
       - httpApi:
           path: /users/{userId}/reminders/{reminderId}
           method: put
-  send-reminder-java-api:
-    handler: com.sunshine.handler.SendReminderHandler
+  send-notifications-java-api:
+    handler: com.sunshine.handler.SendNotificationsHandler
     events:
       - httpApi:
-          path: /users/{userId}/reminder
+          path: /notifications
           method: get
   simpleSchedulerTrigger:
     handler: com.sunshine.handler.SimpleSchedulerHandler

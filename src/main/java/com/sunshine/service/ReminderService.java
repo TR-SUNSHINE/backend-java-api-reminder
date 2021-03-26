@@ -46,26 +46,28 @@ public class ReminderService {
 
     }
 
-    public ArrayList<Reminder> sendReminder(String userId) {
+    public ArrayList<Reminder> sendNotifications() {
 
-        LOG.info("sendReminder in ReminderService");
+        LOG.info("sendNotifications in ReminderService");
 
-        ArrayList<Reminder> reminders =  this.mySqlConnect.readReminders(userId);
+        ArrayList<Reminder> notifications =  this.mySqlConnect.readNotifications();
 
-        LocalDateTime latestReminderTime = reminders.get(reminders.size() - 1).getReminderTime();
+        return notifications;
 
-        int isInFuture = latestReminderTime.compareTo(LocalDateTime.now());
+//        LocalDateTime latestReminderTime = notifications.get(notifications.size() - 1).getReminderTime();
 
-        long difference = ChronoUnit.MINUTES.between(LocalDateTime.now(), latestReminderTime);
-        LOG.debug("Difference between reminder & now: {}", difference);
-        if (isInFuture > 0 && (difference > 55 && difference < 65)){
+//        int isInFuture = latestReminderTime.compareTo(LocalDateTime.now());
+//
+//        long difference = ChronoUnit.MINUTES.between(LocalDateTime.now(), latestReminderTime);
+//        LOG.debug("Difference between reminder & now: {}", difference);
+//        if (isInFuture > 0 && (difference > 55 && difference < 65)){
 
-            return new ArrayList<>(reminders.subList(reminders.size() - 1, reminders.size()));
+//            return new ArrayList<>(reminders.subList(reminders.size() - 1, reminders.size()));
 
-        } else {
-
-            return new ArrayList<>();
-        }
+//        } else {
+//
+//            return new ArrayList<>();
+//        }
     }
 
     public int changeReminder(Reminder reminder){
